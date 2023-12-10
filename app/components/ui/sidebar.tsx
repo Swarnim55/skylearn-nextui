@@ -1,61 +1,93 @@
-'use client'
-import { Sidebar, Menu, MenuItem } from 'react-pro-sidebar';
-import { FaBook } from "react-icons/fa";
-import { PiStudent } from "react-icons/pi";
-import { MdContentPaste } from "react-icons/md";
-import { MdAssignment } from "react-icons/md";
-import { FaBookOpen } from "react-icons/fa";
-import { IoIosSchool } from "react-icons/io";
-import { FaUserFriends } from "react-icons/fa";
-import { useState } from 'react';
+'use client';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { BiMenuAltRight } from 'react-icons/bi';
+import { FaBook, FaBookOpen, FaUserFriends } from 'react-icons/fa';
+import { IoIosSchool } from 'react-icons/io';
+import { MdAssignment, MdContentPaste } from 'react-icons/md';
+import { PiStudent } from 'react-icons/pi';
+import { Menu, MenuItem, Sidebar } from 'react-pro-sidebar';
+import React from 'react';
+import { NavbarBrand } from '@nextui-org/navbar';
+import NextLink from 'next/link';
+const SideBar = () => {
+  const router = useRouter();
 
-const SideBar = () => 
-{
-    const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+  const [activeMenuItem, setActiveMenuItem] = useState('Dashboard');
 
-    return(
-        <div style={{display:'flex',height:"100%",minHeight:'400px'}}>
-            <Sidebar
-                backgroundColor='#28292b'
-                collapsed={collapsed}
-            >
-            <Menu>
-                <main style={{ padding: 10 }}>
-                <div>
-                <button className="sb-button" onClick={() => setCollapsed(!collapsed)}>
-                    Collapse
-                </button>
-                </div>
-                </main>
-            </Menu>
-            <Menu
-              menuItemStyles={{
-                button: ({ level, active, disabled }) => {
-                  if (level === 0) {
-                    return {
-                      backgroundColor: active ? "#ffff" : undefined,
-                      "&:hover": {
-                         backgroundColor: "#335B8C !important",
-                         color: "white",
-                         fontWeight: "bold !important"
-                       },
-                    };
-                  }
-                },
-              }}>
-                <MenuItem icon={<FaBook/>}> Semester </MenuItem>
-                <MenuItem icon={<IoIosSchool/>}> Department </MenuItem>
-                <MenuItem icon={<PiStudent/>}>Students</MenuItem>
-                <MenuItem icon={<MdContentPaste/>}> Content </MenuItem>
-                <MenuItem icon={<MdAssignment/>}> Assignment </MenuItem>
-                <MenuItem icon={<FaBookOpen/>}> Courses </MenuItem>
-                <MenuItem icon={<FaUserFriends/>}>User</MenuItem>
-            </Menu>
-            </Sidebar>
-  
-        </div>
+  // Update the active menu item based on the current route
 
-    )
-}
+  const handleMenuItemClick = (menuItem) => {
+    setActiveMenuItem(menuItem);
+  };
+  return (
+    <Sidebar collapsed={collapsed}>
+      <Menu closeOnClick>
+        <MenuItem
+          icon={<BiMenuAltRight />}
+          onClick={() => {
+            setCollapsed(!collapsed);
+          }}
+          style={{ textAlign: 'center' }}
+        >
+          SKYLEARN
+        </MenuItem>
+        <MenuItem
+          icon={<FaBook />}
+          active={activeMenuItem === 'Dashboard'}
+          onClick={() => handleMenuItemClick('Dashboard')}
+        >
+          Dashboard
+        </MenuItem>
+        <MenuItem
+          icon={<IoIosSchool />}
+          active={activeMenuItem === 'Department'}
+          onClick={() => {
+            handleMenuItemClick('Department');
+            router.push('/departments');
+          }}
+        >
+          Department
+        </MenuItem>
+        <MenuItem
+          icon={<PiStudent />}
+          active={activeMenuItem === 'Students'}
+          onClick={() => handleMenuItemClick('Students')}
+        >
+          Students
+        </MenuItem>
+        <MenuItem
+          icon={<MdContentPaste />}
+          active={activeMenuItem === 'Content'}
+          onClick={() => handleMenuItemClick('Content')}
+        >
+          Content
+        </MenuItem>
+        <MenuItem
+          icon={<MdAssignment />}
+          active={activeMenuItem === 'Assignment'}
+          onClick={() => handleMenuItemClick('Assignment')}
+        >
+          Assignment
+        </MenuItem>
+        <MenuItem
+          icon={<FaBookOpen />}
+          active={activeMenuItem === 'Courses'}
+          onClick={() => handleMenuItemClick('Courses')}
+        >
+          Courses
+        </MenuItem>
+        <MenuItem
+          icon={<FaUserFriends />}
+          active={activeMenuItem === 'User'}
+          onClick={() => handleMenuItemClick('User')}
+        >
+          User
+        </MenuItem>
+      </Menu>
+    </Sidebar>
+  );
+};
 
-export default SideBar
+export default SideBar;
