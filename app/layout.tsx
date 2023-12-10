@@ -1,11 +1,13 @@
-import { Navbar } from '@/components/navbar';
-import { fontSans } from '@/config/fonts';
-import { siteConfig } from '@/config/site';
+
 import '@/styles/globals.css';
+import { Metadata } from 'next';
+import { siteConfig } from '@/config/site';
+import { fontSans } from '@/config/fonts';
+import { Providers } from './providers';
+import { Navbar } from '@/components/navbar';
 import { Link } from '@nextui-org/link';
 import clsx from 'clsx';
-import { Metadata } from 'next';
-import { Providers } from './providers';
+import SideBar from './components/ui/sidebar';
 
 export const metadata: Metadata = {
   title: {
@@ -41,6 +43,7 @@ export default function RootLayout({
         <Providers themeProps={{ attribute: 'class', defaultTheme: 'dark' }}>
           <div className="relative flex flex-col h-screen">
             <Navbar />
+            <SideBar/>
             <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
               {children}
             </main>
@@ -59,5 +62,4 @@ export default function RootLayout({
         </Providers>
       </body>
     </html>
-  );
-}
+  )}

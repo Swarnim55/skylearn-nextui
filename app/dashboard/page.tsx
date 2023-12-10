@@ -1,7 +1,9 @@
 import React from 'react';
+import RootLayout from '../layout';
 
-const page = () => {
+const   Dashboard = () => {
   return <div>Dashboard Page</div>;
 };
+Dashboard.getlayout=RootLayout
 
-export default page;
+export default Dashboard;
