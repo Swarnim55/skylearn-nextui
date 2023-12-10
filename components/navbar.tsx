@@ -37,7 +37,7 @@ import {
   DropdownTrigger,
   User,
 } from '@nextui-org/react';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 import { stat } from 'fs';
 
 export const Navbar = () => {
@@ -130,7 +130,11 @@ export const Navbar = () => {
               <DropdownItem key="help_and_feedback">
                 Help & Feedback
               </DropdownItem>
-              <DropdownItem key="logout" color="danger">
+              <DropdownItem
+                key="logout"
+                color="danger"
+                onClick={() => signOut()}
+              >
                 Log Out
               </DropdownItem>
             </DropdownMenu>

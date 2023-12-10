@@ -80,7 +80,7 @@ const BaseListingView = ({
       </div>
     );
   }
-  if (datares.includes('Error')) {
+  if (datares?.includes('Error')) {
     return (
       <div role="alert">
         <div className="bg-red-500 text-white font-bold rounded-t px-4 py-2">
