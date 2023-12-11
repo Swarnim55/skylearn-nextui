@@ -6,7 +6,7 @@ import {
   PORTAL_BASE_URL,
   getApiRoute,
 } from '../../../../constants';
-export const handler = NextAuth({
+const handler = NextAuth({
   providers: [
     CredentialsProvider({
       name: 'Credentials',
