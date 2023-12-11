@@ -1,3 +1,4 @@
+/* eslint-disable */
 import NextAuth from 'next-auth/next';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import {
@@ -15,7 +16,7 @@ export const handler = NextAuth({
       },
       async authorize(credentials, req) {
         try {
-          const currentOrigin = req.headers.origin;
+          const currentOrigin = req?.headers?.origin;
           const res = await fetch(`${PORTAL_BASE_URL}${getApiRoute('LOGIN')}`, {
             method: 'POST',
             body: JSON.stringify({

@@ -18,7 +18,7 @@ const SideBar = () => {
 
   // Update the active menu item based on the current route
 
-  const handleMenuItemClick = (menuItem) => {
+  const handleMenuItemClick = (menuItem: string) => {
     setActiveMenuItem(menuItem);
   };
   return (
