@@ -45,7 +45,7 @@ const SideBar = () => {
           active={activeMenuItem === 'Department'}
           onClick={() => {
             handleMenuItemClick('Department');
-            router.push('/departments');
+            router.push('/dashboard/departments');
           }}
         >
           Department

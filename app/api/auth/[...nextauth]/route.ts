@@ -28,6 +28,7 @@ export const handler = NextAuth({
             },
           });
           const user = await res.json();
+          console.log('res111:', user);
 
           if (!res.ok) {
             throw new Error(user.errors.message);
@@ -43,6 +44,9 @@ export const handler = NextAuth({
       },
     }),
   ],
+  pages: {
+    signIn: '/signin',
+  },
   callbacks: {
     async jwt({ token, user }) {
       return { ...token, ...user };

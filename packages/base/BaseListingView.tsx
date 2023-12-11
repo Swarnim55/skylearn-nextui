@@ -30,9 +30,11 @@ import { SearchIcon } from '@/constants/SearchIcon';
 import { columns, users, statusOptions } from '../dummy/listingdata';
 import { capitalize } from '@/utils/string';
 // import { useCustomQuery } from '@/services/api';
-import { getApiRoute } from '@/constants';
+import { PORTAL_BASE_URL, getApiRoute } from '@/constants';
 import { getListDatas } from '@/services/api';
 import { Progress } from '@nextui-org/react';
+import { useQuery } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
 
 const axios = require('axios').default;
 
@@ -49,8 +51,15 @@ type User = (typeof users)[0];
 const BaseListingView = ({
   title,
   endpoint,
+  filterKey,
   tableSchema,
   initialVisibleColumns,
+}: {
+  title: string;
+  endpoint: string;
+  filterKey: string;
+  tableSchema: any;
+  initialVisibleColumns: any;
 }) => {
   const [filterValue, setFilterValue] = React.useState('');
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
@@ -66,38 +75,37 @@ const BaseListingView = ({
     direction: 'ascending',
   });
   const [page, setPage] = React.useState(1);
-  const datares = getListDatas({ endpoint: endpoint });
-  if (datares === 'loading') {
-    return (
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Spinner label="Loading..." color="warning" size="2lg" />
-      </div>
-    );
-  }
-  if (datares?.includes('Error')) {
-    return (
-      <div role="alert">
-        <div className="bg-red-500 text-white font-bold rounded-t px-4 py-2">
-          Danger
-        </div>
-        <div className="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
-          <p>{datares}</p>
-        </div>
-      </div>
-    );
-  }
-  const data = datares?.data;
 
-  if (!data) {
-    return null;
-  }
-  const pages = Math.ceil(users.length / rowsPerPage);
+  const { data: sessionData } = useSession();
+  const { jwtToken } = sessionData?.user?.data || {};
+
+  const fetchDataList = async ({
+    endpoint,
+    jwtToken,
+  }: {
+    endpoint: string;
+    jwtToken: string;
+  }) => {
+    const response = await axios.get(`${PORTAL_BASE_URL}${endpoint}`, {
+      headers: {
+        Authorization: jwtToken,
+        paginate: true,
+        pageSize: rowsPerPage,
+        pageNumber: page,
+      },
+    });
+
+    return response.data;
+  };
+
+  const { data } = useQuery({
+    queryKey: ['lists', jwtToken],
+    queryFn: () => fetchDataList({ endpoint: endpoint, jwtToken: jwtToken }),
+    // ⬇️ disabled as long as the jwtToken is empty
+    enabled: !!jwtToken,
+  });
+
+  const pages = Math.ceil(data?.length || 10 / rowsPerPage);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -110,30 +118,35 @@ const BaseListingView = ({
   }, [tableSchema]);
 
   const filteredItems = React.useMemo(() => {
-    let filteredUsers = [...users];
+    let filteredData = data ? [...data?.data] : [];
 
-    if (hasSearchFilter) {
-      filteredUsers = filteredUsers.filter((user) =>
-        user.name.toLowerCase().includes(filterValue.toLowerCase())
-      );
+    if (hasSearchFilter && filterKey) {
+      filteredData = filteredData.filter((user) => {
+        //TODO: change this to dynamic key
+        console.log('user', user);
+        console.log('fk', filterKey);
+        return user[filterKey]
+          .toLowerCase()
+          .includes(filterValue.toLowerCase());
+      });
     }
     if (
       statusFilter !== 'all' &&
       Array.from(statusFilter).length !== statusOptions.length
     ) {
-      filteredUsers = filteredUsers.filter((user) =>
+      filteredData = filteredData.filter((user) =>
         Array.from(statusFilter).includes(user.status)
       );
     }
 
-    return filteredUsers;
-  }, [users, filterValue, statusFilter]);
+    return filteredData;
+  }, [data, filterValue, statusFilter, filterKey]);
 
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
 
-    return filteredItems.slice(start, end);
+    return filteredItems.slice(start, end) || [];
   }, [page, filteredItems, rowsPerPage]);
 
   const sortedItems = React.useMemo(() => {
@@ -148,13 +161,16 @@ const BaseListingView = ({
 
   const renderCell = React.useCallback(
     (item, columnKey) => {
-      const cellValue = item[columnKey];
-
+      const cellValue = item[columnKey] || '';
+      console.log('cv', cellValue);
+      console.log('ck', columnKey);
+      console.log('i', item);
+      console.log('ick', item?.columnKey);
       switch (tableSchema.find((column) => column.key === columnKey)?.type) {
         case 'text':
           return cellValue;
         case 'switch':
-          return <Switch checked={cellValue} />;
+          return <Switch isSelected={cellValue} />;
         case 'date':
           return <p>{new Date(cellValue).toLocaleDateString()}</p>;
         // Add more cases as needed for other types
@@ -164,65 +180,6 @@ const BaseListingView = ({
     },
     [tableSchema]
   );
-
-  // const renderCell = React.useCallback((user: User, columnKey: React.Key) => {
-  //   const cellValue = user[columnKey as keyof User];
-
-  //   switch (columnKey) {
-  //     case 'name':
-  //       return (
-  //         <User
-  //           avatarProps={{ radius: 'full', size: 'sm', src: user.avatar }}
-  //           classNames={{
-  //             description: 'text-default-500',
-  //           }}
-  //           description={user.email}
-  //           name={cellValue}
-  //         >
-  //           {user.email}
-  //         </User>
-  //       );
-  //     case 'role':
-  //       return (
-  //         <div className="flex flex-col">
-  //           <p className="text-bold text-small capitalize">{cellValue}</p>
-  //           <p className="text-bold text-tiny capitalize text-default-500">
-  //             {user.team}
-  //           </p>
-  //         </div>
-  //       );
-  //     case 'status':
-  //       return (
-  //         <Chip
-  //           className="capitalize border-none gap-1 text-default-600"
-  //           color={statusColorMap[user.status]}
-  //           size="sm"
-  //           variant="dot"
-  //         >
-  //           {cellValue}
-  //         </Chip>
-  //       );
-  //     case 'actions':
-  //       return (
-  //         <div className="relative flex justify-end items-center gap-2">
-  //           <Dropdown className="bg-background border-1 border-default-200">
-  //             <DropdownTrigger>
-  //               <Button isIconOnly radius="full" size="sm" variant="light">
-  //                 <VerticalDotsIcon className="text-default-400" />
-  //               </Button>
-  //             </DropdownTrigger>
-  //             <DropdownMenu>
-  //               <DropdownItem>View</DropdownItem>
-  //               <DropdownItem>Edit</DropdownItem>
-  //               <DropdownItem>Delete</DropdownItem>
-  //             </DropdownMenu>
-  //           </Dropdown>
-  //         </div>
-  //       );
-  //     default:
-  //       return cellValue;
-  //   }
-  // }, []);
 
   const onRowsPerPageChange = React.useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -321,7 +278,7 @@ const BaseListingView = ({
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            Total {users.length} users
+            Total {sortedItems.length} users
           </span>
           <label className="flex items-center text-default-400 text-small">
             Rows per page:
@@ -424,14 +381,18 @@ const BaseListingView = ({
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody emptyContent={'No users found'} items={sortedItems || data}>
-          {(item) => (
-            <TableRow key={item.id}>
-              {(columnKey) => (
-                <TableCell>{renderCell(item, columnKey)}</TableCell>
-              )}
-            </TableRow>
-          )}
+        <TableBody emptyContent={'No Data found'} items={sortedItems ?? []}>
+          {(item) => {
+            return (
+              <TableRow key={item.pid}>
+                {(columnKey) => (
+                  // console.log('colKey', columnKey);
+                  // return <TableCell>ads</TableCell>;
+                  <TableCell>{renderCell(item, columnKey)}</TableCell>
+                )}
+              </TableRow>
+            );
+          }}
         </TableBody>
       </Table>
     </BaseLayout>
