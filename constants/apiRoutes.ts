@@ -32,4 +32,8 @@ export const apiRoutes = Object.freeze({
   //**COURSES */
   COURSES: 'courses',
   'COURSES-DETAIL': 'courses/:id',
+
+  //**STUDENTS */
+  STUDENTS: 'students',
+  'STUDENTS-DETAIL': 'students/:id',
 });

@@ -1,38 +1,35 @@
 'use client';
-import React from 'react';
-import BaseLayout from './BaseLayout';
+import { ChevronDownIcon } from '@/constants/ChevronDownIcon';
+import { PlusIcon } from '@/constants/PlusIcon';
+import { SearchIcon } from '@/constants/SearchIcon';
+import { capitalize } from '@/utils/string';
 import {
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-  Input,
   Button,
-  DropdownTrigger,
+  Card,
+  ChipProps,
   Dropdown,
-  DropdownMenu,
   DropdownItem,
-  Chip,
-  User,
+  DropdownMenu,
+  DropdownTrigger,
+  Input,
   Pagination,
   Selection,
-  ChipProps,
+  Skeleton,
   SortDescriptor,
   Switch,
-  Spinner,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+  User,
 } from '@nextui-org/react';
-import { PlusIcon } from '@/constants/PlusIcon';
-import { VerticalDotsIcon } from '@/constants/VerticalDotsIcon';
-import { ChevronDownIcon } from '@/constants/ChevronDownIcon';
-import { SearchIcon } from '@/constants/SearchIcon';
-import { columns, users, statusOptions } from '../dummy/listingdata';
-import { capitalize } from '@/utils/string';
+import React from 'react';
+import { columns, statusOptions, users } from '../dummy/listingdata';
+import BaseLayout from './BaseLayout';
 // import { useCustomQuery } from '@/services/api';
-import { PORTAL_BASE_URL, getApiRoute } from '@/constants';
-import { getListDatas } from '@/services/api';
-import { Progress } from '@nextui-org/react';
+import { PORTAL_BASE_URL } from '@/constants';
 import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 
@@ -98,7 +95,7 @@ const BaseListingView = ({
     return response.data;
   };
 
-  const { data } = useQuery({
+  const { data, isLoading, isSuccess } = useQuery({
     queryKey: ['lists', jwtToken],
     queryFn: () => fetchDataList({ endpoint: endpoint, jwtToken: jwtToken }),
     // ⬇️ disabled as long as the jwtToken is empty
@@ -122,9 +119,6 @@ const BaseListingView = ({
 
     if (hasSearchFilter && filterKey) {
       filteredData = filteredData.filter((user) => {
-        //TODO: change this to dynamic key
-        console.log('user', user);
-        console.log('fk', filterKey);
         return user[filterKey]
           .toLowerCase()
           .includes(filterValue.toLowerCase());
@@ -162,10 +156,7 @@ const BaseListingView = ({
   const renderCell = React.useCallback(
     (item, columnKey) => {
       const cellValue = item[columnKey] || '';
-      console.log('cv', cellValue);
-      console.log('ck', columnKey);
-      console.log('i', item);
-      console.log('ick', item?.columnKey);
+
       switch (tableSchema.find((column) => column.key === columnKey)?.type) {
         case 'text':
           return cellValue;
@@ -347,12 +338,33 @@ const BaseListingView = ({
     []
   );
 
+  const listSkeleton = () => {
+    return (
+      <Card className="w-[200px] space-y-5 p-4" radius="lg">
+        <Skeleton className="rounded-lg">
+          <div className="h-24 rounded-lg bg-default-300"></div>
+        </Skeleton>
+        <div className="space-y-3">
+          <Skeleton className="w-3/5 rounded-lg">
+            <div className="h-3 w-3/5 rounded-lg bg-default-200"></div>
+          </Skeleton>
+          <Skeleton className="w-4/5 rounded-lg">
+            <div className="h-3 w-4/5 rounded-lg bg-default-200"></div>
+          </Skeleton>
+          <Skeleton className="w-2/5 rounded-lg">
+            <div className="h-3 w-2/5 rounded-lg bg-default-300"></div>
+          </Skeleton>
+        </div>
+      </Card>
+    );
+  };
+
   return (
     <BaseLayout title={title}>
       <Table
         isCompact
         removeWrapper
-        aria-label="Example table with custom cells, pagination and sorting"
+        aria-label="Listing table with custom cells, pagination and sorting"
         bottomContent={bottomContent}
         bottomContentPlacement="outside"
         checkboxesProps={{
@@ -381,18 +393,41 @@ const BaseListingView = ({
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody emptyContent={'No Data found'} items={sortedItems ?? []}>
-          {(item) => {
+        <TableBody
+          emptyContent={'Requesting Data ...'}
+          items={sortedItems ?? []}
+        >
+          {isLoading
+            ? Array.from({ length: 5 }).map((_, index) => (
+                <TableRow key={index}>
+                  {(columnKey) => (
+                    <TableCell>
+                      {' '}
+                      <Skeleton className="w-3/5 rounded-lg">
+                        <div className="h-3 w-3/5 rounded-lg bg-default-200"></div>
+                      </Skeleton>
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))
+            : (item) => {
+                return (
+                  <TableRow key={item.pid}>
+                    {(columnKey) => (
+                      <TableCell>{renderCell(item, columnKey)}</TableCell>
+                    )}
+                  </TableRow>
+                );
+              }}
+          {/* {(item) => {
             return (
               <TableRow key={item.pid}>
                 {(columnKey) => (
-                  // console.log('colKey', columnKey);
-                  // return <TableCell>ads</TableCell>;
                   <TableCell>{renderCell(item, columnKey)}</TableCell>
                 )}
               </TableRow>
             );
-          }}
+          }} */}
         </TableBody>
       </Table>
     </BaseLayout>

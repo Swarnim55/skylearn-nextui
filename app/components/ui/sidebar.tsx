@@ -36,7 +36,10 @@ const SideBar = () => {
         <MenuItem
           icon={<FaBook />}
           active={activeMenuItem === 'Dashboard'}
-          onClick={() => handleMenuItemClick('Dashboard')}
+          onClick={() => {
+            handleMenuItemClick('Dashboard');
+            router.push('/dashboard/');
+          }}
         >
           Dashboard
         </MenuItem>
@@ -48,40 +51,55 @@ const SideBar = () => {
             router.push('/dashboard/departments');
           }}
         >
-          Department
+          Departments
         </MenuItem>
         <MenuItem
           icon={<PiStudent />}
           active={activeMenuItem === 'Students'}
-          onClick={() => handleMenuItemClick('Students')}
+          onClick={() => {
+            handleMenuItemClick('Students');
+            router.push('/dashboard/students');
+          }}
         >
           Students
         </MenuItem>
         <MenuItem
           icon={<MdContentPaste />}
           active={activeMenuItem === 'Content'}
-          onClick={() => handleMenuItemClick('Content')}
+          onClick={() => {
+            handleMenuItemClick('Content');
+            router.push('/dashboard/content');
+          }}
         >
           Content
         </MenuItem>
         <MenuItem
           icon={<MdAssignment />}
           active={activeMenuItem === 'Assignment'}
-          onClick={() => handleMenuItemClick('Assignment')}
+          onClick={() => {
+            handleMenuItemClick('Assignment');
+            router.push('/dashboard/assignments');
+          }}
         >
-          Assignment
+          Assignments
         </MenuItem>
         <MenuItem
           icon={<FaBookOpen />}
           active={activeMenuItem === 'Courses'}
-          onClick={() => handleMenuItemClick('Courses')}
+          onClick={() => {
+            handleMenuItemClick('Courses');
+            router.push('/dashboard/courses');
+          }}
         >
           Courses
         </MenuItem>
         <MenuItem
           icon={<FaUserFriends />}
           active={activeMenuItem === 'User'}
-          onClick={() => handleMenuItemClick('User')}
+          onClick={() => {
+            handleMenuItemClick('User');
+            router.push('/dashboard/users');
+          }}
         >
           User
         </MenuItem>
