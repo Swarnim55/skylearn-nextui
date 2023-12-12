@@ -4,10 +4,10 @@ import React from 'react';
 const BaseLayout = ({ title, children }) => {
   return (
     <>
-      <div className="text-4xl font-semibold text-gray-900 dark:text-white m-5 p-5">
+      <div className="text-4xl font-semibold  dark:text-white m-5 p-5">
         {title || ''}
       </div>
-      <div>{children}</div>
+      <div className="mt-5">{children}</div>
     </>
   );
 };

@@ -51,12 +51,14 @@ const BaseListingView = ({
   filterKey,
   tableSchema,
   initialVisibleColumns,
+  handleCreate,
 }: {
   title: string;
   endpoint: string;
   filterKey: string;
   tableSchema: any;
   initialVisibleColumns: any;
+  handleCreate: any;
 }) => {
   const [filterValue, setFilterValue] = React.useState('');
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
@@ -84,11 +86,14 @@ const BaseListingView = ({
     jwtToken: string;
   }) => {
     const response = await axios.get(`${PORTAL_BASE_URL}${endpoint}`, {
-      headers: {
-        Authorization: jwtToken,
+      params: {
         paginate: true,
         pageSize: rowsPerPage,
         pageNumber: page,
+      },
+
+      headers: {
+        Authorization: jwtToken,
       },
     });
 
@@ -115,7 +120,7 @@ const BaseListingView = ({
   }, [tableSchema]);
 
   const filteredItems = React.useMemo(() => {
-    let filteredData = data ? [...data?.data] : [];
+    let filteredData = data ? [...data?.data?.data] : [];
 
     if (hasSearchFilter && filterKey) {
       filteredData = filteredData.filter((user) => {
@@ -262,6 +267,7 @@ const BaseListingView = ({
               className="bg-foreground text-background"
               endContent={<PlusIcon />}
               size="sm"
+              onClick={handleCreate}
             >
               Add New
             </Button>
@@ -269,7 +275,7 @@ const BaseListingView = ({
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            Total {sortedItems.length} users
+            Total {sortedItems.length} {title}
           </span>
           <label className="flex items-center text-default-400 text-small">
             Rows per page:
