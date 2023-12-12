@@ -56,6 +56,7 @@ const validationSchema = z.object({
     .string()
     .min(3, 'Provide atleast 3 Characters!')
     .max(50, 'Too Long!'),
+  description: z.string(),
   type: z.string().min(3, 'Provide atleast 3 Characters!').max(50, 'Too Long!'),
   isActive: z.boolean(),
 });
@@ -109,12 +110,20 @@ const DepartmentListPage = () => {
                         required: true,
                       },
                       {
+                        key: 'descriptions',
+                        label: 'Description',
+                        placeholder: 'Description for the Department',
+                        type: 'text',
+                        required: true,
+                      },
+                      {
                         key: 'isActive',
                         label: 'Publish',
                         type: 'switch',
                         placeholder: 'Publish this Department!',
                       },
                     ]}
+                    endpoint={getApiRoute('DEPARTMENTS')}
                     onSubmit={(data) => console.log('data', data)}
                     validationSchema={validationSchema}
                   />
