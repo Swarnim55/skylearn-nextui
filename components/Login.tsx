@@ -1,5 +1,5 @@
 'use client';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import type {
@@ -7,6 +7,8 @@ import type {
   InferGetServerSidePropsType,
 } from 'next';
 import { getCsrfToken, signIn } from 'next-auth/react';
+import { ThemeSwitch } from '@/components/theme-switch';
+import { useTheme } from 'next-themes';
 // import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 // import { Metadata } from "next";
 // export const metadata: Metadata = {
@@ -19,6 +21,12 @@ export const LoginPage = () => {
   const emailRef = useRef('');
   const passwordRef = useRef('');
 
+  const { theme, setTheme } = useTheme();
+
+  useEffect(() => {
+    setTheme('light');
+  }, []);
+
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     await signIn('credentials', {
@@ -29,14 +37,21 @@ export const LoginPage = () => {
     });
   };
   return (
-    <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+    <div
+      className={`flex min-h-full flex-col  justify-center px-6 py-12 lg:px-8 ${
+        theme === 'dark' ? 'text-white-900' : 'text-gray-900'
+      } `}
+    >
+      <div>
+        <ThemeSwitch className="absolute top-5 right-5" />
+      </div>
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <img
           className="mx-auto h-10 w-auto"
           src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
           alt="Your Company"
         />
-        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight ">
           Sign in to your account
         </h2>
       </div>
@@ -46,7 +61,7 @@ export const LoginPage = () => {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium leading-6 text-gray-900"
+              className={`block text-sm font-medium leading-6`}
             >
               Email address
             </label>
@@ -58,7 +73,7 @@ export const LoginPage = () => {
                 onChange={(e) => (emailRef.current = e.target.value)}
                 placeholder="Enter your email or phone number..."
                 required
-                className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                className="block w-full rounded-md border-0 py-1.5 px-2 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
           </div>
@@ -67,7 +82,7 @@ export const LoginPage = () => {
             <div className="flex items-center justify-between">
               <label
                 htmlFor="password"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 "
               >
                 Password
               </label>
@@ -82,7 +97,7 @@ export const LoginPage = () => {
                 onChange={(e) => (passwordRef.current = e.target.value)}
                 type="password"
                 required
-                className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                className="block w-full rounded-md border-0 py-1.5 px-2  shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
           </div>

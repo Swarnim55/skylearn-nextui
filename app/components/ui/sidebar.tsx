@@ -11,10 +11,11 @@ import React from 'react';
 import { NavbarBrand } from '@nextui-org/navbar';
 import NextLink from 'next/link';
 import { useTheme } from 'next-themes';
+
 const SideBar = () => {
   const router = useRouter();
-  const { theme } = useTheme();
-  console.log('theme', theme);
+  const { theme, setTheme } = useTheme();
+
   const [collapsed, setCollapsed] = useState(false);
   const [activeMenuItem, setActiveMenuItem] = useState('Dashboard');
 
