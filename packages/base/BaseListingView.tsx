@@ -400,7 +400,7 @@ const BaseListingView = ({
           )}
         </TableHeader>
         <TableBody
-          emptyContent={'Requesting Data ...'}
+          emptyContent={isLoading ? 'Requesting Data ...' : 'No data available'}
           items={sortedItems ?? []}
         >
           {isLoading
@@ -425,15 +425,6 @@ const BaseListingView = ({
                   </TableRow>
                 );
               }}
-          {/* {(item) => {
-            return (
-              <TableRow key={item.pid}>
-                {(columnKey) => (
-                  <TableCell>{renderCell(item, columnKey)}</TableCell>
-                )}
-              </TableRow>
-            );
-          }} */}
         </TableBody>
       </Table>
     </BaseLayout>

@@ -15,6 +15,7 @@ import {
   cn,
 } from '@nextui-org/react';
 import React, { useRef } from 'react';
+import { useForm } from 'react-hook-form';
 import { MdOutlineMail } from 'react-icons/md';
 import { RiLockPasswordFill } from 'react-icons/ri';
 import { z } from 'zod';
@@ -35,6 +36,13 @@ const CreateDepartmentDTO = [
     required: true,
   },
   {
+    key: 'descriptions',
+    label: 'Description',
+    placeholder: 'Description for the Department',
+    type: 'textarea',
+    required: true,
+  },
+  {
     key: 'isActive',
     label: 'Publish',
     type: 'switch',
@@ -45,6 +53,7 @@ const CreateDepartmentDTO = [
 const tableSchema = [
   { key: 'departmentName', label: 'Department Name', type: 'text' },
   { key: 'type', label: 'Type', type: 'text' },
+
   {
     key: 'isActive',
     label: 'Publish',
@@ -56,18 +65,18 @@ const validationSchema = z.object({
     .string()
     .min(3, 'Provide atleast 3 Characters!')
     .max(50, 'Too Long!'),
-  description: z.string(),
+  descriptions: z.string(),
   type: z.string().min(3, 'Provide atleast 3 Characters!').max(50, 'Too Long!'),
   isActive: z.boolean(),
 });
 const DepartmentListPage = () => {
-  const formRef = useRef();
-
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const handleCreate = () => {
     onOpen();
   };
-
+  const handleSubmit = (data: any) => {
+    console.log(data);
+  };
   return (
     <>
       <BaseListingView
@@ -124,7 +133,7 @@ const DepartmentListPage = () => {
                       },
                     ]}
                     endpoint={getApiRoute('DEPARTMENTS')}
-                    onSubmit={(data) => console.log('data', data)}
+                    onSubmit={handleSubmit}
                     validationSchema={validationSchema}
                   />
                 </ModalBody>
