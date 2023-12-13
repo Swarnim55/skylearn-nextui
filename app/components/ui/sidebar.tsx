@@ -6,13 +6,15 @@ import { FaBook, FaBookOpen, FaUserFriends } from 'react-icons/fa';
 import { IoIosSchool } from 'react-icons/io';
 import { MdAssignment, MdContentPaste } from 'react-icons/md';
 import { PiStudent } from 'react-icons/pi';
-import { Menu, MenuItem, Sidebar } from 'react-pro-sidebar';
+import { Menu, MenuItem, Sidebar, sidebarClasses } from 'react-pro-sidebar';
 import React from 'react';
 import { NavbarBrand } from '@nextui-org/navbar';
 import NextLink from 'next/link';
+import { useTheme } from 'next-themes';
 const SideBar = () => {
   const router = useRouter();
-
+  const { theme } = useTheme();
+  console.log('theme', theme);
   const [collapsed, setCollapsed] = useState(false);
   const [activeMenuItem, setActiveMenuItem] = useState('Dashboard');
 
@@ -22,7 +24,14 @@ const SideBar = () => {
     setActiveMenuItem(menuItem);
   };
   return (
-    <Sidebar collapsed={collapsed}>
+    <Sidebar
+      collapsed={collapsed}
+      rootStyles={{
+        [`.${sidebarClasses.container}`]: {
+          backgroundColor: theme === 'dark' ? '#000' : '#fff',
+        },
+      }}
+    >
       <Menu closeOnClick>
         <MenuItem
           icon={<BiMenuAltRight />}
