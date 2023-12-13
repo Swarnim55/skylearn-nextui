@@ -74,6 +74,7 @@ const BaseListingView = ({
     direction: 'ascending',
   });
   const [page, setPage] = React.useState(1);
+  console.log('PAGE', page);
 
   const { data: sessionData } = useSession();
   const { jwtToken } = sessionData?.user?.data || {};
@@ -81,9 +82,13 @@ const BaseListingView = ({
   const fetchDataList = async ({
     endpoint,
     jwtToken,
+    page,
+    rowsPerPage,
   }: {
     endpoint: string;
     jwtToken: string;
+    page: number;
+    rowsPerPage: number;
   }) => {
     const response = await axios.get(`${PORTAL_BASE_URL}${endpoint}`, {
       params: {
@@ -100,14 +105,20 @@ const BaseListingView = ({
     return response.data;
   };
 
-  const { data, isLoading, isSuccess } = useQuery({
-    queryKey: ['lists', jwtToken],
-    queryFn: () => fetchDataList({ endpoint: endpoint, jwtToken: jwtToken }),
+  const { data, isLoading, isSuccess, refetch } = useQuery({
+    queryKey: ['lists', jwtToken, page, rowsPerPage],
+    queryFn: () =>
+      fetchDataList({
+        endpoint: endpoint,
+        jwtToken: jwtToken,
+        page: page,
+        rowsPerPage: rowsPerPage,
+      }),
     // ⬇️ disabled as long as the jwtToken is empty
     enabled: !!jwtToken,
   });
 
-  const pages = Math.ceil(data?.length || 10 / rowsPerPage);
+  const pages = data?.data?.totalPages;
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -145,7 +156,7 @@ const BaseListingView = ({
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
 
-    return filteredItems.slice(start, end) || [];
+    return filteredItems;
   }, [page, filteredItems, rowsPerPage]);
 
   const sortedItems = React.useMemo(() => {
@@ -181,6 +192,7 @@ const BaseListingView = ({
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       setRowsPerPage(Number(e.target.value));
       setPage(1);
+      // refetch();
     },
     []
   );
@@ -305,16 +317,13 @@ const BaseListingView = ({
     return (
       <div className="py-2 px-2 flex justify-between items-center">
         <Pagination
-          showControls
-          classNames={{
-            cursor: 'bg-foreground text-background',
-          }}
-          color="default"
-          isDisabled={hasSearchFilter}
-          page={page}
+          showShadow
           total={pages}
-          variant="light"
-          onChange={setPage}
+          isCompact
+          page={page}
+          initialPage={1}
+          size="sm"
+          onChange={(page) => setPage(page)}
         />
         <span className="text-small text-default-400">
           {selectedKeys === 'all'
@@ -323,7 +332,7 @@ const BaseListingView = ({
         </span>
       </div>
     );
-  }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
+  }, [selectedKeys, items.length, page, pages]);
 
   const classNames = React.useMemo(
     () => ({

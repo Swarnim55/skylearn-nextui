@@ -1,6 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { BiMenuAltRight } from 'react-icons/bi';
 import { FaBook, FaBookOpen, FaUserFriends } from 'react-icons/fa';
 import { IoIosSchool } from 'react-icons/io';
@@ -16,6 +16,13 @@ const SideBar = () => {
   const router = useRouter();
   const { theme, setTheme } = useTheme();
 
+  const bgColor = useMemo(() => {
+    if (theme) {
+      return theme === 'dark' ? '#000' : '#fff';
+    }
+    return 'inherit';
+  }, [theme]);
+
   const [collapsed, setCollapsed] = useState(false);
   const [activeMenuItem, setActiveMenuItem] = useState('Dashboard');
 
@@ -29,7 +36,7 @@ const SideBar = () => {
       collapsed={collapsed}
       rootStyles={{
         [`.${sidebarClasses.container}`]: {
-          backgroundColor: theme === 'dark' ? '#000' : '#fff',
+          backgroundColor: bgColor,
         },
       }}
     >

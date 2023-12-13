@@ -36,7 +36,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <Navbar />
 
         {/* Main Content */}
-        <main className="flex-grow overflow-y-auto p-3 ">{children}</main>
+        <main className="flex-grow overflow-y-auto p-5 ">{children}</main>
 
         {/* Footer */}
         <footer className="w-full flex items-center justify-center py-3">
