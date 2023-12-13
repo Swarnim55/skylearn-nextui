@@ -10,6 +10,7 @@ import {
   Dropdown,
   DropdownItem,
   DropdownMenu,
+  DropdownSection,
   DropdownTrigger,
   Input,
   Pagination,
@@ -27,11 +28,14 @@ import {
 } from '@nextui-org/react';
 import React from 'react';
 import { columns, statusOptions, users } from '../dummy/listingdata';
+import { GrFormView } from 'react-icons/gr';
 import BaseLayout from './BaseLayout';
 // import { useCustomQuery } from '@/services/api';
 import { PORTAL_BASE_URL } from '@/constants';
 import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
+import { TbEdit } from 'react-icons/tb';
+import { BiSolidTrashAlt } from 'react-icons/bi';
 
 const axios = require('axios').default;
 
@@ -275,14 +279,65 @@ const BaseListingView = ({
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Button
-              className="bg-foreground text-background"
-              endContent={<PlusIcon />}
-              size="sm"
-              onClick={handleCreate}
-            >
-              Add New
-            </Button>
+            {selectedKeys instanceof Set && selectedKeys.size === 0 ? (
+              <Button
+                className="bg-foreground text-background"
+                endContent={<PlusIcon />}
+                size="sm"
+                onClick={handleCreate}
+              >
+                Add New
+              </Button>
+            ) : selectedKeys instanceof Set && selectedKeys.size === 1 ? (
+              <Dropdown type="listbox">
+                <DropdownTrigger>
+                  <Button
+                    size="sm"
+                    variant="flat"
+                    className="bg-foreground text-background"
+                    endContent={<PlusIcon />}
+                  >
+                    Actions
+                  </Button>
+                </DropdownTrigger>
+                <DropdownMenu
+                  variant="faded"
+                  aria-label="Dropdown menu with description"
+                >
+                  <DropdownSection title="Actions" showDivider>
+                    <DropdownItem
+                      key="view"
+                      description="View Detail"
+                      startContent={<GrFormView />}
+                    >
+                      View
+                    </DropdownItem>
+                    <DropdownItem
+                      key="edit"
+                      shortcut="⌘⇧E"
+                      description="Allows you to edit the file"
+                      startContent={<TbEdit />}
+                    >
+                      Edit file
+                    </DropdownItem>
+                  </DropdownSection>
+                  <DropdownSection title="Danger zone">
+                    <DropdownItem
+                      key="delete"
+                      className="text-danger"
+                      color="danger"
+                      shortcut="⌘⇧D"
+                      description="Permanently delete the file"
+                      startContent={<BiSolidTrashAlt />}
+                    >
+                      Delete file
+                    </DropdownItem>
+                  </DropdownSection>
+                </DropdownMenu>
+              </Dropdown>
+            ) : (
+              'Multiple Action'
+            )}
           </div>
         </div>
         <div className="flex justify-between items-center">
@@ -309,6 +364,7 @@ const BaseListingView = ({
     visibleColumns,
     onSearchChange,
     onRowsPerPageChange,
+    selectedKeys,
     users.length,
     hasSearchFilter,
   ]);
