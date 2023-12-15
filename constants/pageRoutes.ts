@@ -22,8 +22,7 @@ export const pageRoutes = Object.freeze({
   //**DEPARTMENT */
   DEPARTMENTS: '/departments',
   'DEPARTMENTS-DETAIL': '/departments/:departmentIdx/detail',
-  'DEPARTMENTS-EDIT': '/department/edit/:id',
-  'DEPARTMENTS-CREATE': '/department/create',
+  'DEPARTMENTS-EDIT': '/departments/:departmentIdx/edit',
 
   //**SEMESTER */
   SEMESTER: '/semester',

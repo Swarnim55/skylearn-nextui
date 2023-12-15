@@ -1,20 +1,27 @@
 'use client';
 
 import { PORTAL_BASE_URL } from '@/constants';
+import { Button } from '@nextui-org/react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { forEach } from 'lodash';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { IoArrowBack } from 'react-icons/io5';
 import './detail.css';
 
 const DetailLayout = ({
   endpoint,
   detailId,
+  editRoute,
+  titleKey,
 }: {
   endpoint: string;
   detailId: string;
+  editRoute: string;
+  titleKey: string;
 }) => {
   const { data: sessionData } = useSession();
+  const router = useRouter();
   const { jwtToken } = sessionData?.user?.data || {};
   const fetchDataDetail = async ({
     endpoint,
@@ -65,22 +72,55 @@ const DetailLayout = ({
 
     return <div className="skeleton-container">{skeletonRows}</div>;
   }
-
+  const getValue = (valueType: string, value: any) => {
+    switch (valueType) {
+      case 'string':
+        return value;
+      case 'number':
+        return value;
+      case 'boolean':
+        return value ? 'Yes' : 'No';
+      default:
+        return value;
+    }
+  };
   if (isSuccess) {
-    console.log('data', data);
-    const renderedData = Object.entries(data.data).map(([key, value]) => (
-      <div className="grid-row">
-        <div className="grid-key">
-          {key.toLowerCase().charAt(0).toUpperCase() + key.slice(1)}
+    const renderedData = Object.entries(data.data).map(([key, value]) => {
+      const valueType = typeof value;
+      return (
+        <div className="grid-row">
+          <div className="grid-key">
+            {key.toLowerCase().charAt(0).toUpperCase() + key.slice(1)}
+          </div>
+          <div className="grid-column">{getValue(valueType, value)}</div>
         </div>
-        <div className="grid-column">{value || ''}</div>
-      </div>
-    ));
+      );
+    });
     return (
-      <div className="maxW-full">
-        <div className="grid-container" style={{ margin: '0px auto' }}>
-          {renderedData}
+      <div className="max-w-screen-md">
+        <div className="flex flex-col gap-4">
+          <div className="flex justify-between">
+            <Button
+              color="danger"
+              variant="bordered"
+              startContent={<IoArrowBack />}
+              onClick={() => router.back()}
+            >
+              Go Back
+            </Button>
+            <Button
+              color="primary"
+              variant="bordered"
+              onClick={() => router.push(editRoute)}
+            >
+              Edit
+            </Button>
+          </div>
+          <div className="flex-initial w-64">
+            <p className="font-semibold text-3xl">{data.data[titleKey]}</p>
+          </div>
         </div>
+        <div className="grid-container mt-5">{renderedData}</div>
       </div>
     );
   }

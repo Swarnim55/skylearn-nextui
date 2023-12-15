@@ -1,5 +1,5 @@
 import DetailLayout from '@/app/components/layout/detail';
-import { getApiRoute } from '@/constants';
+import { getApiRoute, getPageRoute } from '@/constants';
 import React from 'react';
 
 const DepartmentDetailPage = ({
@@ -8,13 +8,15 @@ const DepartmentDetailPage = ({
   params: { departmentIdx: string };
 }) => {
   return (
-    <div>
-      Department{params.departmentIdx}DetailPage
-      <DetailLayout
-        endpoint={getApiRoute('DEPARTMENTS')}
-        detailId={params.departmentIdx}
-      />
-    </div>
+    <DetailLayout
+      endpoint={getApiRoute('DEPARTMENTS')}
+      detailId={params.departmentIdx}
+      editRoute={getPageRoute('DEPARTMENTS-EDIT').replace(
+        ':departmentIdx',
+        params.departmentIdx
+      )}
+      titleKey="departmentName"
+    />
   );
 };
 
