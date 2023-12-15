@@ -5,6 +5,8 @@ import { Input, Textarea } from '@nextui-org/input';
 import { Switch } from '@nextui-org/switch';
 import { cn } from '@nextui-org/system';
 import { useSession } from 'next-auth/react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { ReactNode } from 'react';
 import {
   Controller,
@@ -18,6 +20,8 @@ import './css/style.css';
 
 import { PORTAL_BASE_URL } from '@/constants';
 import { useMutation } from '@tanstack/react-query';
+import { IoReturnDownBack } from 'react-icons/io5';
+import { useRouter } from 'next/navigation';
 
 const axios = require('axios').default;
 export type FormProps<T extends Record<string, unknown>> = {
@@ -39,6 +43,7 @@ export type FormProps<T extends Record<string, unknown>> = {
   validationSchema: z.ZodSchema<T>;
   defaultValues?: DefaultValues<T>;
   onSubmit: SubmitHandler<T>;
+  listRoute?: string;
 };
 
 function Form<T extends Record<string, unknown>>({
@@ -46,11 +51,12 @@ function Form<T extends Record<string, unknown>>({
   fieldSchema,
   validationSchema,
   onSubmit,
+  listRoute,
   defaultValues,
 }: FormProps<T>) {
   const { data: sessionData } = useSession();
   const { jwtToken } = sessionData?.user?.data || {};
-  console.log('dv', defaultValues);
+  const router = useRouter();
   const {
     register,
     control,
@@ -62,7 +68,10 @@ function Form<T extends Record<string, unknown>>({
   });
 
   const postData = async (data: any) => {
-    const response = await axios.post(`${PORTAL_BASE_URL}${endpoint}`, data, {
+    const response = await axios({
+      method: 'PUT',
+      url: `${PORTAL_BASE_URL}${endpoint}`,
+      data: data,
       headers: {
         Authorization: jwtToken,
       },
@@ -74,11 +83,21 @@ function Form<T extends Record<string, unknown>>({
     mutationFn: postData,
   });
 
-  const formSubmit: SubmitHandler<any> = (data) => {
-    console.log('fd', data);
-    mutation.mutate(data);
-  };
+  const formSubmit: SubmitHandler<any> = async (data) => {
+    try {
+      // Call the mutation function
+      await mutation.mutateAsync(data);
 
+      // Show a success toast upon successful mutation
+      toast.success('Mutation successful!');
+      if (listRoute) {
+        router.push(listRoute);
+      }
+    } catch (error) {
+      // Handle errors if needed
+      console.error('Mutation error:', error);
+    }
+  };
   return (
     <form onSubmit={handleSubmit(formSubmit)}>
       <div className="flex flex-col gap-1">
@@ -91,27 +110,35 @@ function Form<T extends Record<string, unknown>>({
                 <Controller
                   control={control}
                   name={key as Path<T>}
-                  render={({ field: { onChange, value, ref } }) => (
-                    <>
-                      <Input
-                        {...register(key as Path<T>)}
-                        label={label}
-                        onChange={onChange}
-                        value={value as string}
-                        labelPlacement="inside"
-                        ref={ref}
-                        isRequired={required}
-                        placeholder={placeholder ?? ''}
-                        type="text"
-                        className={errors[key as string] ? 'input-invalid' : ''}
-                      />
-                      {errors[key as string] && (
-                        <span className="error-message">
-                          {errorMessage as ReactNode}
-                        </span>
-                      )}
-                    </>
-                  )}
+                  render={({ field: { onChange, value, ref } }) => {
+                    console.log('haha', value);
+                    console.log('hakey', key);
+                    console.log('ref', ref);
+                    console.log('oc', onChange);
+                    return (
+                      <>
+                        <Input
+                          label={label}
+                          onChange={onChange}
+                          name={key as Path<T>}
+                          value={value as string}
+                          labelPlacement="inside"
+                          ref={ref}
+                          isRequired={required}
+                          placeholder={placeholder ?? ''}
+                          type="text"
+                          className={
+                            errors[key as string] ? 'input-invalid' : ''
+                          }
+                        />
+                        {errors[key as string] && (
+                          <span className="error-message">
+                            {errorMessage as ReactNode}
+                          </span>
+                        )}
+                      </>
+                    );
+                  }}
                 />
               );
 
@@ -123,7 +150,6 @@ function Form<T extends Record<string, unknown>>({
                   render={({ field: { onChange, value, ref } }) => (
                     <>
                       <Textarea
-                        {...register(key as Path<T>)}
                         label={label}
                         isRequired={required}
                         onChange={onChange}

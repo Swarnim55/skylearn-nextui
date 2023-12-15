@@ -1,6 +1,7 @@
 'use client';
 
 import UpdateForm from '@/packages/ui/form/UpdateForm';
+import { ToastContainer } from 'react-toastify';
 import { z } from 'zod';
 
 const EditLayout = ({
@@ -39,7 +40,9 @@ const EditLayout = ({
         editId={editId}
         fieldSchema={fieldSchema}
         validationSchema={validationSchema}
+        listRoute={listRoute}
       />
+      <ToastContainer position="top-center" autoClose={3000} />
     </div>
   );
 };
