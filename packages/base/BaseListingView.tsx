@@ -26,9 +26,9 @@ import {
   TableRow,
   User,
 } from '@nextui-org/react';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { columns, statusOptions, users } from '../dummy/listingdata';
-import { GrFormView } from 'react-icons/gr';
+import { GrActions, GrFormView } from 'react-icons/gr';
 import BaseLayout from './BaseLayout';
 // import { useCustomQuery } from '@/services/api';
 import { PORTAL_BASE_URL } from '@/constants';
@@ -56,6 +56,7 @@ const BaseListingView = ({
   tableSchema,
   initialVisibleColumns,
   handleCreate,
+  onActionClick,
 }: {
   title: string;
   endpoint: string;
@@ -63,6 +64,7 @@ const BaseListingView = ({
   tableSchema: any;
   initialVisibleColumns: any;
   handleCreate: any;
+  onActionClick: (rowData: any, action: string) => void;
 }) => {
   const [filterValue, setFilterValue] = React.useState('');
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
@@ -78,10 +80,16 @@ const BaseListingView = ({
     direction: 'ascending',
   });
   const [page, setPage] = React.useState(1);
-  console.log('PAGE', page);
-
   const { data: sessionData } = useSession();
   const { jwtToken } = sessionData?.user?.data || {};
+
+  const actionId = useMemo(() => {
+    if (selectedKeys instanceof Set && selectedKeys.size === 1) {
+      const id = selectedKeys.values().next().value ?? 'id';
+      console.log('id', id);
+      return id;
+    }
+  }, [selectedKeys]);
 
   const fetchDataList = async ({
     endpoint,
@@ -294,8 +302,8 @@ const BaseListingView = ({
                   <Button
                     size="sm"
                     variant="flat"
-                    className="bg-foreground text-background"
-                    endContent={<PlusIcon />}
+                    className="bg-warning text-background"
+                    endContent={<GrActions />}
                   >
                     Actions
                   </Button>
@@ -308,17 +316,18 @@ const BaseListingView = ({
                     <DropdownItem
                       key="view"
                       description="View Detail"
-                      startContent={<GrFormView />}
+                      endContent={<GrFormView />}
+                      onClick={() => onActionClick(actionId, 'view')}
                     >
                       View
                     </DropdownItem>
                     <DropdownItem
                       key="edit"
-                      shortcut="⌘⇧E"
-                      description="Allows you to edit the file"
-                      startContent={<TbEdit />}
+                      description="Allows you to edit Detail "
+                      endContent={<TbEdit />}
+                      onClick={() => onActionClick(actionId, 'edit')}
                     >
-                      Edit file
+                      Edit
                     </DropdownItem>
                   </DropdownSection>
                   <DropdownSection title="Danger zone">
@@ -326,11 +335,11 @@ const BaseListingView = ({
                       key="delete"
                       className="text-danger"
                       color="danger"
-                      shortcut="⌘⇧D"
-                      description="Permanently delete the file"
-                      startContent={<BiSolidTrashAlt />}
+                      description="Permanently delete the record!"
+                      endContent={<BiSolidTrashAlt />}
+                      onClick={() => onActionClick(actionId, 'delete')}
                     >
-                      Delete file
+                      Delete
                     </DropdownItem>
                   </DropdownSection>
                 </DropdownMenu>

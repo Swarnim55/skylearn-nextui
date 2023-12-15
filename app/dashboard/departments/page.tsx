@@ -1,5 +1,5 @@
 'use client';
-import { getApiRoute } from '@/constants';
+import { getApiRoute, getPageRoute } from '@/constants';
 import BaseListingView from '@/packages/base/BaseListingView';
 import Form from '@/packages/ui/form/form';
 import {
@@ -14,6 +14,7 @@ import {
   useDisclosure,
   cn,
 } from '@nextui-org/react';
+import { useRouter } from 'next/navigation';
 import React, { useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { MdOutlineMail } from 'react-icons/md';
@@ -71,11 +72,25 @@ const validationSchema = z.object({
 });
 const DepartmentListPage = () => {
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
+  const router = useRouter();
   const handleCreate = () => {
     onOpen();
   };
   const handleSubmit = (data: any) => {
     console.log(data);
+  };
+  const handleActionClick = (id: any, action: string) => {
+    switch (action) {
+      case 'view':
+        const pageRoute = getPageRoute('DEPARTMENTS-DETAIL');
+        const detailRoute = pageRoute.replace(':departmentIdx', id);
+        router.push(detailRoute);
+      case 'edit':
+        console.log('Delete Clicked', id);
+        break;
+      default:
+        break;
+    }
   };
   return (
     <>
@@ -86,6 +101,7 @@ const DepartmentListPage = () => {
         initialVisibleColumns={['departmentName', 'type', 'isActive']}
         filterKey="departmentName"
         handleCreate={handleCreate}
+        onActionClick={handleActionClick}
       />
       {/* Render the modal here */}
       {isOpen && (
