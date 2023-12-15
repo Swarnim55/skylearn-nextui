@@ -20,7 +20,7 @@ import { PORTAL_BASE_URL } from '@/constants';
 import { useMutation } from '@tanstack/react-query';
 
 const axios = require('axios').default;
-type FormProps<T extends Record<string, unknown>> = {
+export type FormProps<T extends Record<string, unknown>> = {
   fieldSchema: Array<{
     key: string;
     type:
@@ -37,6 +37,7 @@ type FormProps<T extends Record<string, unknown>> = {
   }>;
   endpoint: string;
   validationSchema: z.ZodSchema<T>;
+  defaultValues?: DefaultValues<T>;
   onSubmit: SubmitHandler<T>;
 };
 
@@ -45,21 +46,21 @@ function Form<T extends Record<string, unknown>>({
   fieldSchema,
   validationSchema,
   onSubmit,
+  defaultValues,
 }: FormProps<T>) {
   const { data: sessionData } = useSession();
   const { jwtToken } = sessionData?.user?.data || {};
+  console.log('dv', defaultValues);
   const {
     register,
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<T>({
-    resolver: zodResolver(validationSchema),
-    defaultValues: fieldSchema.reduce(
-      (acc, field) => ({ ...acc, [field.key]: '' }),
-      {} as DefaultValues<T>
-    ),
+    // resolver: zodResolver(validationSchema),
+    defaultValues: defaultValues?.data || {},
   });
+
   const postData = async (data: any) => {
     const response = await axios.post(`${PORTAL_BASE_URL}${endpoint}`, data, {
       headers: {
@@ -73,31 +74,45 @@ function Form<T extends Record<string, unknown>>({
     mutationFn: postData,
   });
 
-  const formSubmit: SubmitHandler<any> = (data) => mutation.mutate(data);
+  const formSubmit: SubmitHandler<any> = (data) => {
+    console.log('fd', data);
+    mutation.mutate(data);
+  };
 
   return (
     <form onSubmit={handleSubmit(formSubmit)}>
       <div className="flex flex-col gap-1">
         {fieldSchema.map((field) => {
           const { key, label, placeholder, type, required } = field;
+          const errorMessage = errors[key as string]?.message;
           switch (type) {
             case 'text':
               return (
-                <div key={key} className="field-container">
-                  <Input
-                    {...register(key as Path<T>)}
-                    label={label}
-                    isRequired={required}
-                    placeholder={placeholder ?? ''}
-                    type="text"
-                    className={errors[key as string] ? 'input-invalid' : ''}
-                  />
-                  {errors[key as string] && (
-                    <span className="error-message">
-                      {errors[key as string]?.message as ReactNode}
-                    </span>
+                <Controller
+                  control={control}
+                  name={key as Path<T>}
+                  render={({ field: { onChange, value, ref } }) => (
+                    <>
+                      <Input
+                        {...register(key as Path<T>)}
+                        label={label}
+                        onChange={onChange}
+                        value={value as string}
+                        labelPlacement="inside"
+                        ref={ref}
+                        isRequired={required}
+                        placeholder={placeholder ?? ''}
+                        type="text"
+                        className={errors[key as string] ? 'input-invalid' : ''}
+                      />
+                      {errors[key as string] && (
+                        <span className="error-message">
+                          {errorMessage as ReactNode}
+                        </span>
+                      )}
+                    </>
                   )}
-                </div>
+                />
               );
 
             case 'textarea':
@@ -106,17 +121,24 @@ function Form<T extends Record<string, unknown>>({
                   control={control}
                   name={key as Path<T>}
                   render={({ field: { onChange, value, ref } }) => (
-                    <Textarea
-                      {...register(key as Path<T>)}
-                      label={label}
-                      isRequired={required}
-                      onChange={onChange}
-                      value={value as string}
-                      labelPlacement="inside"
-                      placeholder={placeholder ?? 'Enter your description'}
-                      className="max-w-full"
-                      ref={ref}
-                    />
+                    <>
+                      <Textarea
+                        {...register(key as Path<T>)}
+                        label={label}
+                        isRequired={required}
+                        onChange={onChange}
+                        value={value as string}
+                        labelPlacement="inside"
+                        placeholder={placeholder ?? 'Enter your description'}
+                        className="max-w-full"
+                        ref={ref}
+                      />
+                      {errors[key as string] && (
+                        <span className="error-message">
+                          {errorMessage as ReactNode}
+                        </span>
+                      )}
+                    </>
                   )}
                 />
               );

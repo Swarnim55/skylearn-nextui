@@ -3,53 +3,14 @@ import { getApiRoute, getPageRoute } from '@/constants';
 import BaseListingView from '@/packages/base/BaseListingView';
 import Form from '@/packages/ui/form/form';
 import {
-  Button,
-  Input,
   Modal,
   ModalBody,
   ModalContent,
-  ModalFooter,
   ModalHeader,
-  Switch,
   useDisclosure,
-  cn,
 } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
-import React, { useRef } from 'react';
-import { useForm } from 'react-hook-form';
-import { MdOutlineMail } from 'react-icons/md';
-import { RiLockPasswordFill } from 'react-icons/ri';
 import { z } from 'zod';
-
-const CreateDepartmentDTO = [
-  {
-    key: 'departmentName',
-    label: 'Department Name',
-    placeholder: 'Enter Department Name',
-    type: 'text',
-    required: true,
-  },
-  {
-    key: 'type',
-    label: 'Type',
-    placeholder: 'Enter Type',
-    type: 'text',
-    required: true,
-  },
-  {
-    key: 'descriptions',
-    label: 'Description',
-    placeholder: 'Description for the Department',
-    type: 'textarea',
-    required: true,
-  },
-  {
-    key: 'isActive',
-    label: 'Publish',
-    type: 'switch',
-    placeholder: 'Publish this Department!',
-  },
-];
 
 const tableSchema = [
   { key: 'departmentName', label: 'Department Name', type: 'text' },
