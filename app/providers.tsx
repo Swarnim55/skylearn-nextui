@@ -8,6 +8,7 @@ import { ThemeProviderProps } from 'next-themes/dist/types';
 import { SessionProvider } from 'next-auth/react';
 import { Session } from 'next-auth';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import FormProvider from '@/context/FormContext';
 
 export interface ProvidersProps {
   children: React.ReactNode;
@@ -22,7 +23,9 @@ export function Providers({ children, themeProps, session }: ProvidersProps) {
     <SessionProvider session={session}>
       <QueryClientProvider client={queryClient}>
         <NextUIProvider navigate={router.push}>
-          <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
+          <FormProvider>
+            <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
+          </FormProvider>
         </NextUIProvider>
       </QueryClientProvider>
     </SessionProvider>

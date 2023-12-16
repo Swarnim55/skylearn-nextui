@@ -1,12 +1,9 @@
 'use client';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@nextui-org/button';
 import { Input, Textarea } from '@nextui-org/input';
 import { Switch } from '@nextui-org/switch';
 import { cn } from '@nextui-org/system';
 import { useSession } from 'next-auth/react';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { ReactNode } from 'react';
 import {
   Controller,
@@ -15,12 +12,13 @@ import {
   SubmitHandler,
   useForm,
 } from 'react-hook-form';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { z } from 'zod';
 import './css/style.css';
 
 import { PORTAL_BASE_URL } from '@/constants';
 import { useMutation } from '@tanstack/react-query';
-import { IoReturnDownBack } from 'react-icons/io5';
 import { useRouter } from 'next/navigation';
 
 const axios = require('axios').default;
@@ -90,6 +88,7 @@ function Form<T extends Record<string, unknown>>({
 
       // Show a success toast upon successful mutation
       toast.success('Mutation successful!');
+      console.log('lr', listRoute);
       if (listRoute) {
         router.push(listRoute);
       }
@@ -111,10 +110,6 @@ function Form<T extends Record<string, unknown>>({
                   control={control}
                   name={key as Path<T>}
                   render={({ field: { onChange, value, ref } }) => {
-                    console.log('haha', value);
-                    console.log('hakey', key);
-                    console.log('ref', ref);
-                    console.log('oc', onChange);
                     return (
                       <>
                         <Input

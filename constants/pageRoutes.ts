@@ -9,6 +9,7 @@ export const pageRoutes = Object.freeze({
   'CONTENT-CREATE': '/content/create',
 
   //**USER */
+  PROFILE: '/profile',
   USERS: '/users',
   'USERS-DETAIL': '/users/detail/:id',
   'USERS-EDIT': '/users/edit/:id',
@@ -29,6 +30,10 @@ export const pageRoutes = Object.freeze({
   'SEMESTER-DETAIL': '/semester/detail/:id',
   'SEMESTER-EDIT': '/semester/edit/:id',
   'SEMESTER-CREATE': '/semester/create',
+
+  //**STUDENTS */
+  STUDENTS: '/students',
+  'STUDENTS-CREATE': '/students/create',
 
   //**ASSIGNMENTS */
   ASSIGNMENTS: '/assignments',

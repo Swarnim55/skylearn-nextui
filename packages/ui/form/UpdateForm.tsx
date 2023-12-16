@@ -26,6 +26,7 @@ type UpdateFormProps<T extends Record<string, unknown>> = FormProps<T> & {
   }>;
   validationSchema: unknown;
   editId: string;
+  listRoute: string;
 };
 
 const UpdateForm = <T extends Record<string, unknown>>({
@@ -33,6 +34,7 @@ const UpdateForm = <T extends Record<string, unknown>>({
   editId,
   fieldSchema,
   validationSchema,
+  listRoute,
 }: UpdateFormProps<T>) => {
   const { data: sessionData } = useSession();
   const { jwtToken } = sessionData?.user?.data || {};
@@ -86,6 +88,7 @@ const UpdateForm = <T extends Record<string, unknown>>({
       validationSchema={validationSchema as z.ZodSchema<T>}
       onSubmit={onSubmit}
       defaultValues={defaultValues}
+      listRoute={listRoute}
     />
   );
 };

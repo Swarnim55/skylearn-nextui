@@ -23,9 +23,13 @@ import {
   User,
 } from '@nextui-org/react';
 import { signOut, useSession } from 'next-auth/react';
+import { Router } from 'next/router';
+import { getPageRoute } from '@/constants';
+import { useRouter } from 'next/navigation';
 
 export const Navbar = () => {
   const { data: session, status } = useSession();
+  const router = useRouter();
 
   // if (status === 'unauthenticated') {
   //   return signIn();
@@ -106,7 +110,12 @@ export const Navbar = () => {
                 <p className="font-bold">Signed in as</p>
                 <p className="font-bold">{userName}</p>
               </DropdownItem>
-              <DropdownItem key="settings">My Settings</DropdownItem>
+              <DropdownItem
+                key="profile"
+                onClick={() => router.push(getPageRoute('PROFILE'))}
+              >
+                Profile
+              </DropdownItem>
               <DropdownItem key="team_settings">Team Settings</DropdownItem>
               <DropdownItem key="analytics">Analytics</DropdownItem>
               <DropdownItem key="system">System</DropdownItem>

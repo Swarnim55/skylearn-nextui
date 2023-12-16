@@ -1,6 +1,7 @@
 'use client';
-import { getApiRoute } from '@/constants';
+import { getApiRoute, getPageRoute } from '@/constants';
 import BaseListingView from '@/packages/base/BaseListingView';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
 const tableSchema = [
@@ -9,6 +10,7 @@ const tableSchema = [
 ];
 
 const StudentsListPage = () => {
+  const router = useRouter();
   return (
     <BaseListingView
       title="Students"
@@ -16,6 +18,8 @@ const StudentsListPage = () => {
       tableSchema={tableSchema}
       initialVisibleColumns={['name', 'isActive']}
       filterKey="name"
+      handleCreate={() => router.push(getPageRoute('STUDENTS-CREATE'))}
+      onActionClick={(action, id) => {}}
     />
   );
 };
