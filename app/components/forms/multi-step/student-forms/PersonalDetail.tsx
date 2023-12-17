@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form';
 import { useFormData } from '@/context/FormContext';
 import { Input } from '@nextui-org/input';
 import { Autocomplete, AutocompleteItem } from '@nextui-org/react';
-import { departments } from '@/app/dashboard/students/create/page';
 
 export default function PersonalDetail({
   formStep,
@@ -20,7 +19,10 @@ export default function PersonalDetail({
   } = useForm({ mode: 'all' });
 
   const onSubmit = (values) => {
-    setFormValues(values);
+    console.log('stepinp', formStep);
+
+    console.log('valsinp', values);
+    setFormValues(formStep, values);
     nextFormStep();
   };
 
@@ -86,7 +88,10 @@ export default function PersonalDetail({
             <Autocomplete
               isRequired
               label="Select Gender"
-              defaultItems={departments}
+              defaultItems={[
+                { label: 'Male', value: 'Male', description: '' },
+                { label: 'Female', value: 'Female', description: '' },
+              ]}
               placeholder="Search a gender"
               autoComplete="false"
               variant="bordered"
@@ -164,12 +169,12 @@ export default function PersonalDetail({
           <div className={styles.formRow}>
             <Input
               type="number"
-              id="mobile"
+              id="phone"
               isRequired
               placeholder="Student Mobile No."
               label="Student Mobile"
               variant="bordered"
-              {...register('mobile', { required: true })}
+              {...register('phone', { required: true })}
             />
           </div>
           <div className={styles.formRow}>
@@ -186,7 +191,7 @@ export default function PersonalDetail({
         </div>
         <div className="flex justify-between ">
           <button
-            type="submit"
+            type="button"
             className="right-0 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             onClick={() => prevFormStep()}
           >
@@ -195,7 +200,7 @@ export default function PersonalDetail({
           <button
             type="submit"
             className="right-0 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            onClick={() => nextFormStep()}
+            // onClick={() => nextFormStep()}
           >
             Next Step: Documents Upload
           </button>

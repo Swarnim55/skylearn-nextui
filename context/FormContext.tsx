@@ -7,7 +7,8 @@ interface FormData {
 
 interface FormContextProps {
   data: FormData;
-  setFormValues: (values: FormData) => void;
+  setFormValues: (step: number, values: FormData) => void;
+  submitForm: () => void;
 }
 
 export const FormContext = createContext<FormContextProps | undefined>(
@@ -16,20 +17,35 @@ export const FormContext = createContext<FormContextProps | undefined>(
 
 interface FormProviderProps {
   children: ReactNode;
+  onSubmit: (data: FormData) => void;
 }
 
-export default function FormProvider({ children }: FormProviderProps) {
+export default function FormProvider({
+  children,
+  onSubmit,
+}: FormProviderProps) {
   const [data, setData] = useState<FormData>({});
 
-  const setFormValues = (values: FormData) => {
-    setData((prevValues) => ({
-      ...prevValues,
-      ...values,
+  const setFormValues = (step: number, values: FormData) => {
+    console.log('step', step);
+    console.log('values', values);
+    setData((prevData) => ({
+      ...prevData,
+      [step]: { ...prevData[step], ...values },
     }));
   };
 
+  const submitForm = () => {
+    const flattenedData = Object.values(data).reduce(
+      (acc, stepData) => ({ ...acc, ...stepData }),
+      {}
+    );
+
+    onSubmit(flattenedData);
+  };
+
   return (
-    <FormContext.Provider value={{ data, setFormValues }}>
+    <FormContext.Provider value={{ data, setFormValues, submitForm }}>
       {children}
     </FormContext.Provider>
   );

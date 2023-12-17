@@ -1,15 +1,34 @@
 'use-client';
-import { useState } from 'react';
 import { useFormData } from '@/context/FormContext';
-import { useForm } from 'react-hook-form';
-import { Input } from '@nextui-org/input';
-import { Autocomplete, AutocompleteItem } from '@nextui-org/react';
-import { departments } from '@/app/dashboard/students/create/page';
-import Dropzone from 'react-dropzone';
 import styles from '@/styles/styles.module.scss';
+import { useState } from 'react';
+import Dropzone from 'react-dropzone';
+import { useForm } from 'react-hook-form';
 
-export default function DocumentsUpload({ formStep, nextFormStep }) {
-  const { setFormValues } = useFormData();
+function fileToByteArray(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(new Uint8Array(reader.result));
+    reader.onerror = reject;
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+export default function DocumentsUpload({
+  formStep,
+  prevFormStep,
+  nextFormStep,
+}) {
+  const { setFormValues, submitForm } = useFormData();
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [selectedMFiles, setSelectedMFiles] = useState([]);
 
@@ -37,10 +56,18 @@ export default function DocumentsUpload({ formStep, nextFormStep }) {
     setSelectedMFiles(updatedFiles);
   };
 
-  const onSubmit = (values) => {
-    setFormValues(values);
+  const onSubmit = async (values) => {
+    const profileImageBase64 = await fileToBase64(selectedFiles[0]);
+    const documentsBase64 = await Promise.all(selectedMFiles.map(fileToBase64));
+
+    const submitVals = {
+      profileImage: profileImageBase64,
+      documents: documentsBase64,
+    };
+
+    setFormValues(formStep, submitVals);
     // Add logic to handle the selectedFiles (e.g., upload to server)
-    nextFormStep();
+    submitForm();
   };
 
   return (
@@ -147,10 +174,18 @@ export default function DocumentsUpload({ formStep, nextFormStep }) {
           </div>
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-between ">
+          <button
+            type="button"
+            className="right-0 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            onClick={() => prevFormStep()}
+          >
+            Prev Step: Admission Details
+          </button>
           <button
             type="submit"
             className="right-0 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            // onClick={() => nextFormStep()}
           >
             Submit Form
           </button>

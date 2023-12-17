@@ -4,10 +4,67 @@ import { useForm } from 'react-hook-form';
 import { useFormData } from '@/context/FormContext';
 import { Input } from '@nextui-org/input';
 import { Autocomplete, AutocompleteItem } from '@nextui-org/react';
-import { departments } from '@/app/dashboard/students/create/page';
+// import { departments } from '@/app/dashboard/students/create/page';
+import axios from 'axios';
+import { PORTAL_BASE_URL, getApiRoute } from '@/constants';
+import { useSession } from 'next-auth/react';
+import { map } from 'lodash';
+import { useEffect, useState } from 'react';
 
 export default function AdmissionDetail({ formStep, nextFormStep }) {
+  const { data: sessionData } = useSession();
+  const { jwtToken } = sessionData?.user?.data || {};
   const { setFormValues } = useFormData();
+  const [departments, setDepartments] = useState<unknown[]>([]);
+  const [semester, setSemester] = useState<unknown[]>([]);
+  const [courses, setCourses] = useState<unknown[]>([]);
+  const fetchSelectOptions = async (endpoint, labelkey) => {
+    console.log('endpoint', endpoint);
+    console.log('labelkey', labelkey);
+    try {
+      const ep = `${PORTAL_BASE_URL}${endpoint}`;
+      const response = await axios.get(ep, {
+        headers: { Authorization: jwtToken },
+      });
+      const options = map(response.data.data, (item) => ({
+        label: item[labelkey],
+        value: item.pid,
+        description: '',
+      }));
+      return options;
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      return [];
+    }
+  };
+
+  const fetchDepartments = async () => {
+    const options = await fetchSelectOptions(
+      getApiRoute('DEPARTMENTS'),
+      'departmentName'
+    );
+    return options;
+  };
+  const fetchSemseters = async () => {
+    const options = await fetchSelectOptions(getApiRoute('SEMESTER'), 'name');
+    return options;
+  };
+  const fetchCourses = async () => {
+    const options = await fetchSelectOptions(getApiRoute('COURSES'), 'title');
+    return options;
+  };
+  useEffect(() => {
+    const fetchData = async () => {
+      const departmentsData = await fetchDepartments();
+      const semesterData = await fetchSemseters();
+      const coursesData = await fetchCourses();
+      setDepartments(departmentsData);
+      setSemester(semesterData);
+      setCourses(coursesData);
+    };
+
+    fetchData();
+  }, [jwtToken]);
 
   const {
     handleSubmit,
@@ -16,7 +73,7 @@ export default function AdmissionDetail({ formStep, nextFormStep }) {
   } = useForm({ mode: 'all' });
 
   const onSubmit = (values) => {
-    setFormValues(values);
+    setFormValues(formStep, values);
     nextFormStep();
   };
 
@@ -78,7 +135,24 @@ export default function AdmissionDetail({ formStep, nextFormStep }) {
               placeholder="Search a department"
               autoComplete="false"
               variant="bordered"
-              {...register('department', { required: true })}
+              {...register('DepartmentID', { required: true })}
+            >
+              {(item) => (
+                <AutocompleteItem key={item.value}>
+                  {item.label}
+                </AutocompleteItem>
+              )}
+            </Autocomplete>
+          </div>
+          <div className={styles.formRow}>
+            <Autocomplete
+              isRequired
+              label="Select Course"
+              defaultItems={courses}
+              placeholder="Search a course"
+              autoComplete="false"
+              variant="bordered"
+              {...register('course', { required: true })}
             >
               {(item) => (
                 <AutocompleteItem key={item.value}>
@@ -91,11 +165,11 @@ export default function AdmissionDetail({ formStep, nextFormStep }) {
             <Autocomplete
               isRequired
               label="Select Semester"
-              defaultItems={departments}
+              defaultItems={semester}
               placeholder="Search a semester"
               autoComplete="false"
               variant="bordered"
-              {...register('semester', { required: true })}
+              {...register('SEMESTERID', { required: true })}
             >
               {(item) => (
                 <AutocompleteItem key={item.value}>
