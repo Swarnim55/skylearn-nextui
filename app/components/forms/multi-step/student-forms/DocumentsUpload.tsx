@@ -27,6 +27,16 @@ export default function DocumentsUpload({ formStep, nextFormStep }) {
     setSelectedFiles([]);
   };
 
+  const onDropMultiple = (acceptedFiles) => {
+    setSelectedMFiles([...selectedMFiles, ...acceptedFiles]);
+  };
+
+  const onCancelMultiple = (index) => {
+    const updatedFiles = [...selectedMFiles];
+    updatedFiles.splice(index, 1);
+    setSelectedMFiles(updatedFiles);
+  };
+
   const onSubmit = (values) => {
     setFormValues(values);
     // Add logic to handle the selectedFiles (e.g., upload to server)
@@ -88,25 +98,36 @@ export default function DocumentsUpload({ formStep, nextFormStep }) {
             </Dropzone>
           </div>
           <div className={styles.formRow}>
+            {/* Multiple Pictures Dropzone */}
             <label
-              htmlFor="studentPhoto"
+              htmlFor="multiplePhotos"
               className="block text-sm font-medium text-gray-700 dark:text-white"
             >
-              Upload Student Photo
+              Upload Multiple Photos
             </label>
-            <Dropzone onDrop={onDrop} accept="image/*">
+            <Dropzone onDrop={onDropMultiple} accept="image/*">
               {({ getRootProps, getInputProps }) => (
                 <div {...getRootProps()} className="dropzone">
-                  <input {...getInputProps()} />
-                  {selectedFiles.length > 0 ? (
-                    <img
-                      src={URL.createObjectURL(selectedFiles[0])}
-                      alt="Preview"
-                      className="preview-image"
-                      width={'100px'}
-                      height={'100px'}
-                    />
-                  ) : (
+                  <input {...getInputProps()} id="multiplePhotos" />
+                  {selectedMFiles.map((file, index) => (
+                    <div key={index} className="multiple-preview">
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt={`Preview ${index}`}
+                        className="preview-image"
+                        width={'100px'}
+                        height={'100px'}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => onCancelMultiple(index)}
+                        className="cancel-button"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ))}
+                  {selectedMFiles.length === 0 && (
                     <p
                       style={{
                         height: '5rem',
@@ -117,17 +138,8 @@ export default function DocumentsUpload({ formStep, nextFormStep }) {
                         textAlign: 'center',
                       }}
                     >
-                      Upload Image by clicking here or dropping file...
+                      Upload Images by clicking here or dropping files...
                     </p>
-                  )}
-                  {selectedFiles.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={onCancel}
-                      className="cancel-button"
-                    >
-                      Cancel
-                    </button>
                   )}
                 </div>
               )}
