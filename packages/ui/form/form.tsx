@@ -121,7 +121,7 @@ function Form<T extends Record<string, unknown>>({
                           ref={ref}
                           isRequired={required}
                           placeholder={placeholder ?? ''}
-                          type="text"
+                          type={type}
                           className={
                             errors[key as string] ? 'input-invalid' : ''
                           }
