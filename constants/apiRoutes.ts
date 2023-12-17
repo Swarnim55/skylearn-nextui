@@ -38,5 +38,8 @@ export const apiRoutes = Object.freeze({
   'STUDENTS-DETAIL': 'student/:id',
 
     //**Forgot Password*/
-  'FORGOT-PASSWORD':'User/forgot-password'
+  'FORGOT-PASSWORD':'User/forgot-password',
+
+  //**Change Password*/
+  'CHANGE-PASSWORD':"User/reset-password"
 });
