@@ -52,13 +52,13 @@ const validationSchema = z.object({
 const StaffEditPage = ({
   params,
 }: {
-  params: { departmentIdx: string };
+  params: { staffIdx: string };
 }) => {
   return (
     <div>
       DepartmentEditPage
       <EditLayout
-        editId={params.departmentIdx}
+        editId={params.staffIdx}
         endpoint={getApiRoute('STAFF')}
         fieldSchema={EditStaffFieldSchema}
         titleKey="staffName"
