@@ -9,23 +9,7 @@ import {
   Input,
 } from '@nextui-org/react';
 import React from 'react';
-export const departments = [
-  {
-    label: 'COMPUTER SCIENCE AND ENGINEERING - CSE',
-    value: 'cat',
-    description: 'The second most popular pet in the world',
-  },
-  {
-    label: 'CIVIL ENGINEERING - CE',
-    value: 'dog',
-    description: 'The most popular pet in the world',
-  },
-  {
-    label: 'Elephant',
-    value: 'elephant',
-    description: 'The largest land animal',
-  },
-];
+
 const StudentCreatePage = () => {
   return (
     <Card className="max-w-screen-xl" style={{ margin: '0px auto' }}>
