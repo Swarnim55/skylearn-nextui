@@ -16,6 +16,7 @@ const DepartmentDetailPage = ({
         params.departmentIdx
       )}
       titleKey="departmentName"
+      omittedKeys={['pid', 'id']}
     />
   );
 };
