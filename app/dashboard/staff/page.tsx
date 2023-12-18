@@ -7,7 +7,7 @@ import { getApiRoute,getPageRoute } from '../../../constants';
 import BaseListingView from '../../../packages/base/BaseListingView';
 
 const tableSchema = [
-  { key: 'fullname', label: 'FullName', type: 'text' },
+  { key: 'fullName', label: 'FullName', type: 'text' },
   { key: 'position', label: 'Position', type: 'text' },
   { key: 'email', label: 'E-mail', type: 'text' },
   { key: 'departmentName', label: 'Department Name', type: 'text' },
@@ -16,6 +16,19 @@ const tableSchema = [
 
 const StudentsListPage = () => {
   const router = useRouter();
+  const handleActionClick = (id: any, action: string) => {
+    switch (action) {
+      case 'view':
+        const pageRoute = getPageRoute('STAFF-DETAIL');
+        const detailRoute = pageRoute.replace(':staffIdx', id);
+        router.push(detailRoute);
+      case 'edit':
+        console.log('Delete Clicked', id);
+        break;
+      default:
+        break;
+    }
+  };
   return (
     <BaseListingView
       title="Staff"
@@ -24,7 +37,7 @@ const StudentsListPage = () => {
       initialVisibleColumns={['name', 'isActive']}
       filterKey="searchText"
       handleCreate={() => router.push(getPageRoute('STAFF-CREATE'))}
-      onActionClick={(action, id) => {}}
+      onActionClick={handleActionClick}
     />
   );
 };

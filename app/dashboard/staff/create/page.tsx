@@ -8,6 +8,9 @@ import { Input } from "@nextui-org/input";
 import {Autocomplete, AutocompleteItem,Button,Select,SelectItem} from "@nextui-org/react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { apiRoutes } from "@/constants/apiRoutes";
+import { pageRoutes } from "@/constants/pageRoutes";
 
 interface YourFormDataType {
     firstName: string;
@@ -29,11 +32,11 @@ const genders=[
     {label: "Other", value: "other"},
 ]
 
-// const departments=[
-//     {label:"Technical departmentzzz",value:"dep_b55c69a5a510"},
-//     {label:"Civil Engineering",value:"dep_1713679a2255"},
-//     {label:"ECE",value:"dep_42f6f517427e"},
-// ]
+const departments=[
+    {label:"Technical departmentzzz",value:"dep_b55c69a5a510"},
+    {label:"Civil Engineering",value:"dep_1713679a2255"},
+    {label:"ECE",value:"dep_42f6f517427e"},
+]
 
 const CreatePage=()=>{
         const {
@@ -43,30 +46,7 @@ const CreatePage=()=>{
       } = useForm();
       const { data: sessionData } = useSession();
       const { jwtToken } = sessionData?.user?.data || {};
-      const [department,setDepartment]=useState()
-
-      useEffect(() => {
-        const fetchDepartments = async () => {
-            try {
-                var res = await axios({
-                    method: 'GET',
-                    url: `${PORTAL_BASE_URL}${getApiRoute("DEPARTMENTS")}`,
-                    params:{
-                       "paginate":false
-                    },
-                    headers:{
-                       "Authorization":jwtToken
-                    }
-                });
-                setDepartment(res.data);
-                console.log(department)
-            } catch (error) {
-                console.error("API Error:", error);
-            }
-        };
-     
-        fetchDepartments();
-     }, []);
+      const router=useRouter()
 
       const onSubmit: SubmitHandler<YourFormDataType> = async (data) => {
         try {
@@ -79,7 +59,10 @@ const CreatePage=()=>{
                     "Authorization":jwtToken
                 }
             });
-            console.log("API Response:", response.data);
+            if(response.status_code===200)
+            {
+                router.push(pageRoutes.STAFF)
+            }
         } catch (error) {
             console.error("API Error:", error);
         }
@@ -88,7 +71,7 @@ const CreatePage=()=>{
         <div className="mt-10">
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="flex w-full flex-wrap md:flex-nowrap gap-4 py-4">
-                    <Input {...register("firstName")} isRequired type="text" label="First Name" placeholder="Enter your frst name" />
+                    <Input {...register("firstName")} isRequired type="text" label="First Name" placeholder="Enter your first name" />
                     <Input {...register("middleName")} type="text" label="Middle Name" placeholder="Enter your middle name" />
                     <Input {...register("lastName")} isRequired  type="text" label="Last Name" placeholder="Enter your last name" />
                 </div>
@@ -118,7 +101,7 @@ const CreatePage=()=>{
                     label="Select Department" 
                     className="max-w-xs" 
                     >
-                    {Array.isArray(department) && department.map((dep) => (
+                    {Array.isArray(departments) && departments.map((dep) => (
                         <SelectItem key={dep.value} value={dep.value}>
                             {dep.label}
                         </SelectItem>
