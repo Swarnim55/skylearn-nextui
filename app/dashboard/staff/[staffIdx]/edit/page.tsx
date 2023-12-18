@@ -13,9 +13,9 @@ const EditStaffFieldSchema = [
     required: true,
   },
   {
-    key: 'lastName',
-    label: 'Last Name',
-    placeholder: 'Enter Last Name',
+    key: 'middleName',
+    label: 'Middle Name',
+    placeholder: 'Enter Middle Name',
     type: 'text',
     required: true,
   },
@@ -30,7 +30,35 @@ const EditStaffFieldSchema = [
     key: 'email',
     label: 'Email',
     placeholder: 'Enter Email',
-    type: 'email',
+    type: 'text',
+    required: true,
+  },
+  {
+    key: 'gender',
+    label: 'Gender',
+    placeholder: 'Select Gender',
+    type: 'select',
+    required: true,
+  },
+  {
+    key: 'phone',
+    label: 'Phone',
+    placeholder: 'Select Your Number',
+    type: 'select',
+    required: true,
+  },
+  {
+    key: 'joiningDate',
+    label: 'Join Date',
+    placeholder: 'Select Join Date',
+    type: 'date',
+    required: true,
+  },
+  {
+    key: 'dob',
+    label: 'Birth Date',
+    placeholder: 'Select Birth Date',
+    type: 'date',
     required: true,
   },
   {
@@ -56,7 +84,7 @@ const StaffEditPage = ({
 }) => {
   return (
     <div>
-      DepartmentEditPage
+      StaffEditPage
       <EditLayout
         editId={params.staffIdx}
         endpoint={getApiRoute('STAFF')}
