@@ -57,15 +57,24 @@ export default function DocumentsUpload({
   };
 
   const onSubmit = async (values) => {
-    const profileImageBase64 = await fileToBase64(selectedFiles[0]);
-    const documentsBase64 = await Promise.all(selectedMFiles.map(fileToBase64));
+    if (selectedFiles.length > 0 && selectedMFiles.length > 0) {
+      const profileImageBase64 = await fileToBase64(selectedFiles[0]);
+      const documentsBase64 = await Promise.all(
+        selectedMFiles.map(fileToBase64)
+      );
 
-    const submitVals = {
-      profileImage: profileImageBase64,
-      documents: documentsBase64,
-    };
-
-    setFormValues(formStep, submitVals);
+      const submitVals = {
+        profileImage: profileImageBase64,
+        documents: documentsBase64,
+      };
+      setFormValues(formStep, submitVals);
+    } else {
+      const submitVals = {
+        profileImage: '',
+        documents: '',
+      };
+      setFormValues(formStep, submitVals);
+    }
     // Add logic to handle the selectedFiles (e.g., upload to server)
     submitForm();
   };

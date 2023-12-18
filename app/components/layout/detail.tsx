@@ -14,11 +14,13 @@ const DetailLayout = ({
   detailId,
   editRoute,
   titleKey,
+  omittedKeys = [],
 }: {
   endpoint: string;
   detailId: string;
   editRoute: string;
   titleKey: string;
+  omittedKeys?: string[];
 }) => {
   const { data: sessionData } = useSession();
   const router = useRouter();
@@ -85,17 +87,19 @@ const DetailLayout = ({
     }
   };
   if (isSuccess) {
-    const renderedData = Object.entries(data.data).map(([key, value]) => {
-      const valueType = typeof value;
-      return (
-        <div className="grid-row">
-          <div className="grid-key">
-            {key.toLowerCase().charAt(0).toUpperCase() + key.slice(1)}
+    const renderedData = Object.entries(data.data)
+      .filter(([key]) => !omittedKeys.includes(key))
+      .map(([key, value]) => {
+        const valueType = typeof value;
+        return (
+          <div className="grid-row" key={key}>
+            <div className="grid-key">
+              {key.toLowerCase().charAt(0).toUpperCase() + key.slice(1)}
+            </div>
+            <div className="grid-column">{getValue(valueType, value)}</div>
           </div>
-          <div className="grid-column">{getValue(valueType, value)}</div>
-        </div>
-      );
-    });
+        );
+      });
     return (
       <div className="max-w-screen-md">
         <div className="flex flex-col gap-4">

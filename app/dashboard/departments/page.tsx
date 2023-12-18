@@ -60,7 +60,7 @@ const DepartmentListPage = () => {
         endpoint={getApiRoute('DEPARTMENTS')}
         tableSchema={tableSchema}
         initialVisibleColumns={['departmentName', 'type', 'isActive']}
-        filterKey="departmentName"
+        filterKey="searchText"
         handleCreate={handleCreate}
         onActionClick={handleActionClick}
       />
