@@ -40,4 +40,10 @@ export const pageRoutes = Object.freeze({
   'ASSIGNMENTS-DETAIL': '/assignments/detail/:id',
   'ASSIGNMENTS-EDIT': '/assignments/edit/:id',
   'ASSIGNMENTS-CREATE': '/assignments/create',
+
+  //**STAFF CREATE */
+  STAFF:'/staff',
+  'STAFF-DETAIL': '/staff/detail/:id',
+  'STAFF-EDIT': '/staff/edit/:id',
+  'STAFF-CREATE': '/staff/create',
 });

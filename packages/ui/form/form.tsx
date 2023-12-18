@@ -1,4 +1,8 @@
 'use client';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Button } from '@nextui-org/button';
 import { Input, Textarea } from '@nextui-org/input';
 import { Switch } from '@nextui-org/switch';
@@ -201,6 +205,38 @@ function Form<T extends Record<string, unknown>>({
                   )}
                 />
               );
+            case 'date':
+              return(
+                <Controller
+                control={control}
+                name={key as Path<T>}
+                render={({ field: { onChange, value, ref } }) => {
+                  return (
+                    <>
+                      <Input
+                        label={label}
+                        onChange={onChange}
+                        name={key as Path<T>}
+                        value={value as string}
+                        labelPlacement="inside"
+                        ref={ref}
+                        isRequired={required}
+                        placeholder={placeholder ?? ''}
+                        type="date"
+                        className={
+                          errors[key as string] ? 'input-invalid' : ''
+                        }
+                      />
+                      {errors[key as string] && (
+                        <span className="error-message">
+                          {errorMessage as ReactNode}
+                        </span>
+                      )}
+                    </>
+                  );
+                }}
+              />
+              )
             default:
               return null;
           }

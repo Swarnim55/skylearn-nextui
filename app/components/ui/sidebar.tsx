@@ -120,6 +120,16 @@ const SideBar = () => {
         >
           User
         </MenuItem>
+        <MenuItem
+          icon={<FaUserFriends />}
+          active={activeMenuItem === 'Staff'}
+          onClick={() => {
+            handleMenuItemClick('Staff');
+            router.push('/dashboard/staff');
+          }}
+        >
+          Staff
+        </MenuItem>
       </Menu>
     </Sidebar>
   );
