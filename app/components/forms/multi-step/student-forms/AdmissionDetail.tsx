@@ -127,7 +127,7 @@ export default function AdmissionDetail({ formStep, nextFormStep }) {
               {...register('enrolledDate', { required: true })}
             />
           </div>
-          <div className={styles.formRow}>
+          {/* <div className={styles.formRow}>
             <Autocomplete
               isRequired
               label="Select Department"
@@ -143,7 +143,7 @@ export default function AdmissionDetail({ formStep, nextFormStep }) {
                 </AutocompleteItem>
               )}
             </Autocomplete>
-          </div>
+          </div> */}
           <div className={styles.formRow}>
             <Autocomplete
               isRequired

@@ -26,7 +26,7 @@ import {
   TableRow,
   User,
 } from '@nextui-org/react';
-import React, { useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { columns, statusOptions, users } from '../dummy/listingdata';
 import { GrActions, GrFormView } from 'react-icons/gr';
 import BaseLayout from './BaseLayout';
@@ -36,6 +36,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { TbEdit } from 'react-icons/tb';
 import { BiSolidTrashAlt } from 'react-icons/bi';
+import { debounce } from 'lodash';
 
 const axios = require('axios').default;
 
@@ -86,7 +87,6 @@ const BaseListingView = ({
   const actionId = useMemo(() => {
     if (selectedKeys instanceof Set && selectedKeys.size === 1) {
       const id = selectedKeys.values().next().value ?? 'id';
-      console.log('id', id);
       return id;
     }
   }, [selectedKeys]);
@@ -107,6 +107,7 @@ const BaseListingView = ({
         paginate: true,
         pageSize: rowsPerPage,
         pageNumber: page,
+        [filterKey]: filterValue,
       },
 
       headers: {
@@ -130,6 +131,10 @@ const BaseListingView = ({
     enabled: !!jwtToken,
   });
 
+  useEffect(() => {
+    debounce(() => refetch(), 300);
+  }, [filterValue]);
+
   const pages = data?.data?.totalPages;
 
   const hasSearchFilter = Boolean(filterValue);
@@ -145,13 +150,13 @@ const BaseListingView = ({
   const filteredItems = React.useMemo(() => {
     let filteredData = data ? [...data?.data?.data] : [];
 
-    if (hasSearchFilter && filterKey) {
-      filteredData = filteredData.filter((user) => {
-        return user[filterKey]
-          .toLowerCase()
-          .includes(filterValue.toLowerCase());
-      });
-    }
+    // if (hasSearchFilter && filterKey) {
+    //   filteredData = filteredData.filter((user) => {
+    //     return user[filterKey]
+    //       .toLowerCase()
+    //       .includes(filterValue.toLowerCase());
+    //   });
+    // }
     if (
       statusFilter !== 'all' &&
       Array.from(statusFilter).length !== statusOptions.length
@@ -218,154 +223,158 @@ const BaseListingView = ({
     }
   }, []);
 
+  // const debouncedOnSearchChange = debounce(onSearchChange, 300);
+
   const topContent = React.useMemo(() => {
     return (
-      <div className="flex flex-col gap-4">
-        <div className="flex justify-between gap-3 items-end">
-          <Input
-            isClearable
-            classNames={{
-              base: 'w-full sm:max-w-[44%]',
-              inputWrapper: 'border-1',
-            }}
-            placeholder="Search by name..."
-            size="sm"
-            startContent={<SearchIcon className="text-default-300" />}
-            value={filterValue}
-            variant="bordered"
-            onClear={() => setFilterValue('')}
-            onValueChange={onSearchChange}
-          />
-          <div className="flex gap-3">
-            <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button
-                  endContent={<ChevronDownIcon className="text-small" />}
-                  size="sm"
-                  variant="flat"
-                >
-                  Status
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Table Columns"
-                closeOnSelect={false}
-                selectedKeys={statusFilter}
-                selectionMode="multiple"
-                onSelectionChange={setStatusFilter}
-              >
-                {statusOptions.map((status) => (
-                  <DropdownItem key={status.uid} className="capitalize">
-                    {capitalize(status.name)}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
-            <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button
-                  endContent={<ChevronDownIcon className="text-small" />}
-                  size="sm"
-                  variant="flat"
-                >
-                  Columns
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Table Columns"
-                closeOnSelect={false}
-                selectedKeys={visibleColumns}
-                selectionMode="multiple"
-                onSelectionChange={setVisibleColumns}
-              >
-                {columns.map((column) => (
-                  <DropdownItem key={column.uid} className="capitalize">
-                    {capitalize(column.name)}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
-            {selectedKeys instanceof Set && selectedKeys.size === 0 ? (
-              <Button
-                className="bg-foreground text-background"
-                endContent={<PlusIcon />}
-                size="sm"
-                onClick={handleCreate}
-              >
-                Add New
-              </Button>
-            ) : selectedKeys instanceof Set && selectedKeys.size === 1 ? (
-              <Dropdown type="listbox">
-                <DropdownTrigger>
+      <>
+        <div className="flex flex-col gap-4">
+          <div className="flex justify-between gap-3 items-end">
+            <Input
+              isClearable
+              classNames={{
+                base: 'w-full sm:max-w-[44%]',
+                inputWrapper: 'border-1',
+              }}
+              placeholder="Search by name..."
+              size="sm"
+              startContent={<SearchIcon className="text-default-300" />}
+              value={filterValue}
+              variant="bordered"
+              onClear={() => setFilterValue('')}
+              onValueChange={onSearchChange}
+            />
+            <div className="flex gap-3">
+              <Dropdown>
+                <DropdownTrigger className="hidden sm:flex">
                   <Button
+                    endContent={<ChevronDownIcon className="text-small" />}
                     size="sm"
                     variant="flat"
-                    className="bg-warning text-background"
-                    endContent={<GrActions />}
                   >
-                    Actions
+                    Status
                   </Button>
                 </DropdownTrigger>
                 <DropdownMenu
-                  variant="faded"
-                  aria-label="Dropdown menu with description"
+                  disallowEmptySelection
+                  aria-label="Table Columns"
+                  closeOnSelect={false}
+                  selectedKeys={statusFilter}
+                  selectionMode="multiple"
+                  onSelectionChange={setStatusFilter}
                 >
-                  <DropdownSection title="Actions" showDivider>
-                    <DropdownItem
-                      key="view"
-                      description="View Detail"
-                      endContent={<GrFormView />}
-                      onClick={() => onActionClick(actionId, 'view')}
-                    >
-                      View
+                  {statusOptions.map((status) => (
+                    <DropdownItem key={status.uid} className="capitalize">
+                      {capitalize(status.name)}
                     </DropdownItem>
-                    <DropdownItem
-                      key="edit"
-                      description="Allows you to edit Detail "
-                      endContent={<TbEdit />}
-                      onClick={() => onActionClick(actionId, 'edit')}
-                    >
-                      Edit
-                    </DropdownItem>
-                  </DropdownSection>
-                  <DropdownSection title="Danger zone">
-                    <DropdownItem
-                      key="delete"
-                      className="text-danger"
-                      color="danger"
-                      description="Permanently delete the record!"
-                      endContent={<BiSolidTrashAlt />}
-                      onClick={() => onActionClick(actionId, 'delete')}
-                    >
-                      Delete
-                    </DropdownItem>
-                  </DropdownSection>
+                  ))}
                 </DropdownMenu>
               </Dropdown>
-            ) : (
-              'Multiple Action'
-            )}
+              <Dropdown>
+                <DropdownTrigger className="hidden sm:flex">
+                  <Button
+                    endContent={<ChevronDownIcon className="text-small" />}
+                    size="sm"
+                    variant="flat"
+                  >
+                    Columns
+                  </Button>
+                </DropdownTrigger>
+                <DropdownMenu
+                  disallowEmptySelection
+                  aria-label="Table Columns"
+                  closeOnSelect={false}
+                  selectedKeys={visibleColumns}
+                  selectionMode="multiple"
+                  onSelectionChange={setVisibleColumns}
+                >
+                  {columns.map((column) => (
+                    <DropdownItem key={column.uid} className="capitalize">
+                      {capitalize(column.name)}
+                    </DropdownItem>
+                  ))}
+                </DropdownMenu>
+              </Dropdown>
+              {selectedKeys instanceof Set && selectedKeys.size === 0 ? (
+                <Button
+                  className="bg-foreground text-background"
+                  endContent={<PlusIcon />}
+                  size="sm"
+                  onClick={handleCreate}
+                >
+                  Add New
+                </Button>
+              ) : selectedKeys instanceof Set && selectedKeys.size === 1 ? (
+                <Dropdown type="listbox">
+                  <DropdownTrigger>
+                    <Button
+                      size="sm"
+                      variant="flat"
+                      className="bg-warning text-background"
+                      endContent={<GrActions />}
+                    >
+                      Actions
+                    </Button>
+                  </DropdownTrigger>
+                  <DropdownMenu
+                    variant="faded"
+                    aria-label="Dropdown menu with description"
+                  >
+                    <DropdownSection title="Actions" showDivider>
+                      <DropdownItem
+                        key="view"
+                        description="View Detail"
+                        endContent={<GrFormView />}
+                        onClick={() => onActionClick(actionId, 'view')}
+                      >
+                        View
+                      </DropdownItem>
+                      <DropdownItem
+                        key="edit"
+                        description="Allows you to edit Detail "
+                        endContent={<TbEdit />}
+                        onClick={() => onActionClick(actionId, 'edit')}
+                      >
+                        Edit
+                      </DropdownItem>
+                    </DropdownSection>
+                    <DropdownSection title="Danger zone">
+                      <DropdownItem
+                        key="delete"
+                        className="text-danger"
+                        color="danger"
+                        description="Permanently delete the record!"
+                        endContent={<BiSolidTrashAlt />}
+                        onClick={() => onActionClick(actionId, 'delete')}
+                      >
+                        Delete
+                      </DropdownItem>
+                    </DropdownSection>
+                  </DropdownMenu>
+                </Dropdown>
+              ) : (
+                'Multiple Action'
+              )}
+            </div>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-default-400 text-small">
+              Total {sortedItems.length} {title}
+            </span>
+            <label className="flex items-center text-default-400 text-small">
+              Rows per page:
+              <select
+                className="bg-transparent outline-none text-default-400 text-small"
+                onChange={onRowsPerPageChange}
+              >
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+              </select>
+            </label>
           </div>
         </div>
-        <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">
-            Total {sortedItems.length} {title}
-          </span>
-          <label className="flex items-center text-default-400 text-small">
-            Rows per page:
-            <select
-              className="bg-transparent outline-none text-default-400 text-small"
-              onChange={onRowsPerPageChange}
-            >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-            </select>
-          </label>
-        </div>
-      </div>
+      </>
     );
   }, [
     filterValue,
