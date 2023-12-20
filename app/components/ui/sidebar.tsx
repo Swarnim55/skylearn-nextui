@@ -1,15 +1,14 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import {  useMemo, useState } from 'react';
 import { BiMenuAltRight } from 'react-icons/bi';
 import { FaBook, FaBookOpen, FaUserFriends } from 'react-icons/fa';
 import { IoIosSchool } from 'react-icons/io';
 import { MdAssignment, MdContentPaste } from 'react-icons/md';
+import { FaUsers } from "react-icons/fa6"
 import { PiStudent } from 'react-icons/pi';
 import { Menu, MenuItem, Sidebar, sidebarClasses } from 'react-pro-sidebar';
 import React from 'react';
-import { NavbarBrand } from '@nextui-org/navbar';
-import NextLink from 'next/link';
 import { useTheme } from 'next-themes';
 
 const SideBar = () => {
@@ -119,6 +118,16 @@ const SideBar = () => {
           }}
         >
           User
+        </MenuItem>
+        <MenuItem
+          icon={<FaUsers />}
+          active={activeMenuItem === 'Staff'}
+          onClick={() => {
+            handleMenuItemClick('Staff');
+            router.push('/dashboard/staff');
+          }}
+        >
+          Staff
         </MenuItem>
       </Menu>
     </Sidebar>
