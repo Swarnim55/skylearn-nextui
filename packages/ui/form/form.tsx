@@ -1,8 +1,4 @@
 'use client';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Button } from '@nextui-org/button';
 import { Input, Textarea } from '@nextui-org/input';
 import { Switch } from '@nextui-org/switch';

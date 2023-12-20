@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { apiRoutes } from "@/constants/apiRoutes";
 import { pageRoutes } from "@/constants/pageRoutes";
 
-interface YourFormDataType {
+interface StaffFormDataType {
     firstName: string;
     middleName?: string; 
     lastName: string;
@@ -48,7 +48,7 @@ const CreatePage=()=>{
       const { jwtToken } = sessionData?.user?.data || {};
       const router=useRouter()
 
-      const onSubmit: SubmitHandler<YourFormDataType> = async (data) => {
+      const onSubmit: SubmitHandler<StaffFormDataType> = async (data) => {
         try {
             var path=getApiRoute('STAFF')
             const response = await axios({
