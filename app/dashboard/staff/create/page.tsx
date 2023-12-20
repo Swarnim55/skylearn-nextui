@@ -59,18 +59,19 @@ const CreatePage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const resdata = await selectFieldDataFetcher(
-        getApiRoute('DEPARTMENTS'),
-        'departmentName',
-        jwtToken
-      );
-      setDeptOpt(resdata);
+      if (jwtToken) {
+        const resdata = await selectFieldDataFetcher(
+          getApiRoute('DEPARTMENTS'),
+          'departmentName',
+          jwtToken
+        );
+        setDeptOpt(resdata);
+      }
     };
 
     fetchData();
   }, [jwtToken]);
 
-  console.log('deptOpt', deptOpt);
   const onSubmit: SubmitHandler<StaffFormDataType> = async (data) => {
     try {
       var path = getApiRoute('STAFF');
