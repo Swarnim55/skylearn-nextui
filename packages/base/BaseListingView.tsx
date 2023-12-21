@@ -28,7 +28,7 @@ import {
 } from '@nextui-org/react';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { columns, statusOptions, users } from '../dummy/listingdata';
-import { GrActions, GrFormView } from 'react-icons/gr';
+import { GrActions, GrFormView, GrView } from 'react-icons/gr';
 import BaseLayout from './BaseLayout';
 // import { useCustomQuery } from '@/services/api';
 import { PORTAL_BASE_URL } from '@/constants';
@@ -186,9 +186,10 @@ const BaseListingView = ({
     });
   }, [sortDescriptor, items]);
 
-  const renderCell = React.useCallback(
+  const renderCell = useCallback(
     (item, columnKey) => {
       const cellValue = item[columnKey] || '';
+      console.log('actionId', actionId);
 
       switch (tableSchema.find((column) => column.key === columnKey)?.type) {
         case 'text':
@@ -198,11 +199,46 @@ const BaseListingView = ({
         case 'date':
           return <p>{new Date(cellValue).toLocaleDateString()}</p>;
         // Add more cases as needed for other types
+        case 'actions':
+          return (
+            <div className="flex">
+              <Button
+                isIconOnly
+                variant="light"
+                color="primary"
+                aria-label="View"
+                style={{ fontSize: '1.5rem' }}
+                onClick={() => onActionClick(item.pid, 'view')}
+              >
+                <GrFormView />
+              </Button>
+              <Button
+                isIconOnly
+                variant="light"
+                aria-label="Edit"
+                style={{ fontSize: '1.5rem' }}
+                onClick={() => onActionClick(item.pid, 'edit')}
+              >
+                <TbEdit />
+              </Button>
+              <Button
+                isIconOnly
+                variant="light"
+                color="danger"
+                size="md"
+                aria-label="Delete"
+                style={{ fontSize: '1.5rem' }}
+                onClick={() => onActionClick(actionId, 'delete')}
+              >
+                <BiSolidTrashAlt />
+              </Button>
+            </div>
+          );
         default:
           return cellValue;
       }
     },
-    [tableSchema]
+    [tableSchema, selectedKeys]
   );
 
   const onRowsPerPageChange = React.useCallback(
@@ -295,66 +331,14 @@ const BaseListingView = ({
                   ))}
                 </DropdownMenu>
               </Dropdown>
-              {selectedKeys instanceof Set && selectedKeys.size === 0 ? (
-                <Button
-                  className="bg-foreground text-background"
-                  endContent={<PlusIcon />}
-                  size="sm"
-                  onClick={handleCreate}
-                >
-                  Add New
-                </Button>
-              ) : selectedKeys instanceof Set && selectedKeys.size === 1 ? (
-                <Dropdown type="listbox">
-                  <DropdownTrigger>
-                    <Button
-                      size="sm"
-                      variant="flat"
-                      className="bg-warning text-background"
-                      endContent={<GrActions />}
-                    >
-                      Actions
-                    </Button>
-                  </DropdownTrigger>
-                  <DropdownMenu
-                    variant="faded"
-                    aria-label="Dropdown menu with description"
-                  >
-                    <DropdownSection title="Actions" showDivider>
-                      <DropdownItem
-                        key="view"
-                        description="View Detail"
-                        endContent={<GrFormView />}
-                        onClick={() => onActionClick(actionId, 'view')}
-                      >
-                        View
-                      </DropdownItem>
-                      <DropdownItem
-                        key="edit"
-                        description="Allows you to edit Detail "
-                        endContent={<TbEdit />}
-                        onClick={() => onActionClick(actionId, 'edit')}
-                      >
-                        Edit
-                      </DropdownItem>
-                    </DropdownSection>
-                    <DropdownSection title="Danger zone">
-                      <DropdownItem
-                        key="delete"
-                        className="text-danger"
-                        color="danger"
-                        description="Permanently delete the record!"
-                        endContent={<BiSolidTrashAlt />}
-                        onClick={() => onActionClick(actionId, 'delete')}
-                      >
-                        Delete
-                      </DropdownItem>
-                    </DropdownSection>
-                  </DropdownMenu>
-                </Dropdown>
-              ) : (
-                'Multiple Action'
-              )}
+              <Button
+                className="bg-foreground text-background"
+                endContent={<PlusIcon />}
+                size="sm"
+                onClick={handleCreate}
+              >
+                Add New
+              </Button>
             </div>
           </div>
           <div className="flex justify-between items-center">
@@ -475,7 +459,7 @@ const BaseListingView = ({
           {(column) => (
             <TableColumn
               key={column.uid}
-              align={column.uid === 'actions' ? 'center' : 'start'}
+              align="start"
               allowsSorting={column.sortable}
             >
               {column.name}

@@ -100,34 +100,42 @@ const DetailLayout = ({
         );
       });
     return (
-      <Card className="max-w-screen-md">
-        <CardHeader>
-          <div className="flex flex-col gap-5">
-            <div className="flex justify-between" style={{ minWidth: '100%' }}>
-              <Button
-                color="danger"
-                variant="bordered"
-                startContent={<IoArrowBack />}
-                onClick={() => router.back()}
+      <div className="max-w-screen ">
+        <Card
+          className="max-w-screen-xl min-h-full"
+          style={{ margin: '0% auto' }}
+        >
+          <CardHeader>
+            <div className="flex flex-col gap-5" style={{ width: '100%' }}>
+              <div
+                className="flex justify-between max-w-screen-md"
+                style={{ width: '100%' }}
               >
-                Go Back
-              </Button>
-              <Button
-                color="primary"
-                variant="bordered"
-                onClick={() => router.push(editRoute)}
-              >
-                Edit
-              </Button>
-            </div>
+                <Button
+                  color="danger"
+                  variant="ghost"
+                  startContent={<IoArrowBack />}
+                  onClick={() => router.back()}
+                >
+                  Go Back
+                </Button>
+                <Button
+                  color="primary"
+                  variant="ghost"
+                  onClick={() => router.push(editRoute)}
+                >
+                  Edit
+                </Button>
+              </div>
 
-            <p className="font-semibold text-2xl">{data.data[titleKey]}</p>
-          </div>
-        </CardHeader>
-        <CardBody>
-          <div className="grid-container mt-5">{renderedData}</div>
-        </CardBody>
-      </Card>
+              <p className="font-semibold text-2xl">{data.data[titleKey]}</p>
+            </div>
+          </CardHeader>
+          <CardBody className="max-w-screen-md">
+            <div className="grid-container mt-5">{renderedData}</div>
+          </CardBody>
+        </Card>
+      </div>
     );
   }
 };

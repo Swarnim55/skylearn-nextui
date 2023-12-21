@@ -21,6 +21,11 @@ const tableSchema = [
     label: 'Publish',
     type: 'switch',
   },
+  {
+    key: 'actions',
+    label: 'Actions',
+    type: 'actions',
+  },
 ];
 const validationSchema = z.object({
   departmentName: z
@@ -45,9 +50,13 @@ const DepartmentListPage = () => {
       case 'view':
         const pageRoute = getPageRoute('DEPARTMENTS-DETAIL');
         const detailRoute = pageRoute.replace(':departmentIdx', id);
+
         router.push(detailRoute);
+        break;
       case 'edit':
-        console.log('Delete Clicked', id);
+        const editPageRoute = getPageRoute('DEPARTMENTS-EDIT');
+        const editRoute = editPageRoute.replace(':departmentIdx', id);
+        router.push(editRoute);
         break;
       default:
         break;

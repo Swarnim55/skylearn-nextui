@@ -42,7 +42,7 @@ export const pageRoutes = Object.freeze({
   'ASSIGNMENTS-CREATE': '/assignments/create',
 
   //**STAFF CREATE */
-  STAFF:'/staff',
+  STAFF: '/staff',
   'STAFF-DETAIL': '/staff/:staffIdx/detail',
   'STAFF-EDIT': '/staff/:staffIdx/edit',
   'STAFF-CREATE': '/staff/create',
