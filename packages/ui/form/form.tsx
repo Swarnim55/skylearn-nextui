@@ -201,6 +201,38 @@ function Form<T extends Record<string, unknown>>({
                   )}
                 />
               );
+            case 'date':
+              return(
+                <Controller
+                control={control}
+                name={key as Path<T>}
+                render={({ field: { onChange, value, ref } }) => {
+                  return (
+                    <>
+                      <Input
+                        label={label}
+                        onChange={onChange}
+                        name={key as Path<T>}
+                        value={value as string}
+                        labelPlacement="inside"
+                        ref={ref}
+                        isRequired={required}
+                        placeholder={placeholder ?? ''}
+                        type="date"
+                        className={
+                          errors[key as string] ? 'input-invalid' : ''
+                        }
+                      />
+                      {errors[key as string] && (
+                        <span className="error-message">
+                          {errorMessage as ReactNode}
+                        </span>
+                      )}
+                    </>
+                  );
+                }}
+              />
+              )
             default:
               return null;
           }

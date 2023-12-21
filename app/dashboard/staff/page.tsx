@@ -1,38 +1,44 @@
-'use client';
-import { getApiRoute, getPageRoute } from '@/constants';
-import BaseListingView from '@/packages/base/BaseListingView';
-import { useRouter } from 'next/navigation';
-import React from 'react';
+"use client";
+
+import { useRouter } from "next/navigation";
+import React from "react";
+import { getApiRoute, getPageRoute } from "../../../constants";
+import BaseListingView from "../../../packages/base/BaseListingView";
 
 const tableSchema = [
-  { key: 'assignmentName', label: 'AssignmentName', type: 'text' },
-  { key: 'semester', label: 'Semester', type: 'text' },
-  { key: 'departmentName', label: 'DepartmentName', type: 'text' },
-  { key: 'startDate', label: 'StartDate', type: 'text' },
-  { key: 'endDate', label: 'EndDate', type: 'text' },
-  { key: 'studentName', label: 'StudentName', type: 'text' },
-  { key: 'status', label: 'Status', type: 'text' },
-  { key: 'assignedOn', label: 'AssignedOn', type: 'text' }
+  { key: "fullName", label: "FullName", type: "text" },
+  { key: "position", label: "Position", type: "text" },
+  { key: "email", label: "E-mail", type: "text" },
+  { key: "departmentName", label: "Department Name", type: "text" },
+  { key: "isActive", label: "Publish", type: "switch" },
 ];
 
-const StaffDashbaordPage = () => {
+const StudentsListPage = () => {
   const router = useRouter();
+  const handleActionClick = (id: any, action: string) => {
+    switch (action) {
+      case "view":
+        const pageRoute = getPageRoute("STAFF-DETAIL");
+        const detailRoute = pageRoute.replace(":staffIdx", id);
+        router.push(detailRoute);
+      case "edit":
+        console.log("Delete Clicked", id);
+        break;
+      default:
+        break;
+    }
+  };
   return (
-    <><div>
-      <h3>CARDS</h3>
-    </div>
-    <div>
-        <BaseListingView
-          title="Recent Assignments"
-          endpoint={getApiRoute('STUDENT-ASSIGNMENT')}
-          tableSchema={tableSchema}
-          initialVisibleColumns={['AssignmentName', 'Semester','DepartmentName','StartDate','EndDate','StudentName','Status','AssignedOn']}
-          filterKey="AssignmentName"
-          handleCreate={() => router.push(getPageRoute('STUDENTS-CREATE'))}
-          onActionClick={(action, id) => { } } />
-      </div></>
+    <BaseListingView
+      title="Staff"
+      endpoint={getApiRoute("STAFF")}
+      tableSchema={tableSchema}
+      initialVisibleColumns={["name", "isActive"]}
+      filterKey="searchText"
+      handleCreate={() => router.push(getPageRoute("STAFF-CREATE"))}
+      onActionClick={handleActionClick}
+    />
   );
 };
 
-
-export default StaffDashbaordPage;
+export default StudentsListPage;
